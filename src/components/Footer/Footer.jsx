@@ -1,10 +1,19 @@
 import React from "react";
+import "./Footer.css";
 
 export const Footer = () => {
+  const currentYear = new Date().getFullYear();
+  const appVersion = "1.0.0";
+  
   return (
-    <footer className="bg-white border-t border-gray-200 px-6 py-4">
-      <div className="text-center text-sm text-gray-600">
-        © 2024 Sistema Editorial Siriza Agaria. Todos los derechos reservados.
+    <footer className="footer">
+      <div className="footer-content">
+        <div className="footer-copyright">
+          © {currentYear} Sistema Editorial Siriza Agaria. Todos los derechos reservados.
+        </div>
+        <div className="footer-version">
+          Versión {appVersion}
+        </div>
       </div>
     </footer>
   );

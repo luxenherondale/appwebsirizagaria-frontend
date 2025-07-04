@@ -1,0 +1,369 @@
+/* Estilos para el módulo de Contabilidad */
+.contabilidad-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contabilidad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.contabilidad-header h1 {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+}
+
+.btn-nuevo {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-nuevo:hover {
+  background-color: #3a7bc8;
+}
+
+/* Tarjetas de resumen */
+.tarjetas-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tarjeta {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.tarjeta h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.tarjeta .monto {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.tarjeta.ingresos {
+  border-left: 4px solid #27ae60;
+}
+
+.tarjeta.ingresos .monto {
+  color: #27ae60;
+}
+
+.tarjeta.gastos {
+  border-left: 4px solid #e74c3c;
+}
+
+.tarjeta.gastos .monto {
+  color: #e74c3c;
+}
+
+.tarjeta.balance {
+  border-left: 4px solid #3498db;
+}
+
+.tarjeta.balance.positivo .monto {
+  color: #27ae60;
+}
+
+.tarjeta.balance.negativo .monto {
+  color: #e74c3c;
+}
+
+/* Filtros */
+.filtros {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filtro {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filtro label {
+  font-weight: 500;
+  color: #555;
+}
+
+.filtro select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  min-width: 150px;
+}
+
+/* Tabla de transacciones */
+.tabla-container {
+  overflow-x: auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-transacciones {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-transacciones th {
+  background-color: #f8f9fa;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #444;
+  border-bottom: 2px solid #eee;
+}
+
+.tabla-transacciones td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.tabla-transacciones tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-transacciones tr.ingreso {
+  background-color: rgba(39, 174, 96, 0.05);
+}
+
+.tabla-transacciones tr.gasto {
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+.tabla-transacciones .monto {
+  font-weight: 500;
+}
+
+.tabla-transacciones tr.ingreso .monto {
+  color: #27ae60;
+}
+
+.tabla-transacciones tr.gasto .monto {
+  color: #e74c3c;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-editar, .btn-eliminar {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-editar {
+  background-color: #f39c12;
+  color: white;
+}
+
+.btn-editar:hover {
+  background-color: #e67e22;
+}
+
+.btn-eliminar {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-eliminar:hover {
+  background-color: #c0392b;
+}
+
+.no-datos {
+  text-align: center;
+  color: #888;
+  padding: 2rem !important;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #888;
+}
+
+.btn-cerrar:hover {
+  color: #333;
+}
+
+.modal form {
+  padding: 1.5rem;
+}
+
+.form-grupo {
+  margin-bottom: 1.2rem;
+}
+
+.form-grupo label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-grupo input[type="text"],
+.form-grupo input[type="number"],
+.form-grupo input[type="date"],
+.form-grupo select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.form-grupo input:focus,
+.form-grupo select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.radio-grupo {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.radio-grupo label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.botones-form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancelar {
+  padding: 0.6rem 1.2rem;
+  background-color: #f1f1f1;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-cancelar:hover {
+  background-color: #e0e0e0;
+}
+
+.btn-guardar {
+  padding: 0.6rem 1.2rem;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-guardar:hover {
+  background-color: #3a7bc8;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .contabilidad-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .filtros {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filtro {
+    width: 100%;
+  }
+  
+  .filtro select {
+    flex-grow: 1;
+  }
+  
+  .botones-form {
+    flex-direction: column;
+  }
+  
+  .btn-cancelar, .btn-guardar {
+    width: 100%;
+  }
+}

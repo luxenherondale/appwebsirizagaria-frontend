@@ -2,8 +2,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "../../contexts/AuthContext";
 import Index from "../../pages/Index/Index";
+import Register from "../../pages/Register/Register";
 import { Stock } from "../../pages/Stock/Stock";
 import { Contabilidad } from "../../pages/Contabilidad/Contabilidad";
+import { Inicio } from "../../pages/Inicio/Inicio";
 import { MainLayout } from "../Main/Main";
 import { useAuth } from "../../contexts/AuthContext";
 import NotFound from "../../pages/NotFound/NotFound";
@@ -30,6 +32,15 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/inicio"
+              element={
+                <ProtectedRoute>
+                  <Inicio />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/stock"
               element={

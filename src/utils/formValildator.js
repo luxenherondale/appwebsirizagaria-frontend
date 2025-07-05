@@ -146,10 +146,4 @@ export const validateForm = (formData, validationRules) => {
   return { isValid, errors };
 };
 
-// Ejemplo de uso:
-// const formData = { email: 'usuario@example.com', password: 'Abc12345' };
-// const rules = {
-//   email: { required: true, email: true },
-//   password: { required: true, password: true, minLength: 8 }
-// };
-// const { isValid, errors } = validateForm(formData, rules);
+ 

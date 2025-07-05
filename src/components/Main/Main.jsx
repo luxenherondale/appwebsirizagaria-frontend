@@ -7,13 +7,13 @@ import "./Main.css";
 // Función para obtener el título de la página según la ruta actual
 const getPageTitle = (pathname) => {
   const titles = {
+    '/inicio': 'Dashboard',
     '/stock': 'Gestión de Stock',
     '/contabilidad': 'Contabilidad',
     '/proyectos': 'Proyectos en Proceso',
     '/cotizaciones': 'Cotizaciones',
     '/marketing': 'Marketing',
-    '/stock-externo': 'Stock Externo',
-    '/dashboard': 'Dashboard'
+    '/stock-externo': 'Stock Externo'
   };
   
   return titles[pathname] || 'Dashboard';
@@ -22,6 +22,7 @@ const getPageTitle = (pathname) => {
 // Función para obtener los elementos del menú según el rol del usuario
 const getNavItems = (role) => {
   const items = [
+    { to: "/inicio", icon: "📊", text: "Dashboard" },
     { to: "/stock", icon: "📚", text: "Stock Editorial" },
     { to: "/contabilidad", icon: "💰", text: "Contabilidad" },
     { to: "/proyectos", icon: "📝", text: "Proyectos" },

@@ -35,18 +35,18 @@ const initialBooks = [
   },
   {
     id: 3,
-    titulo: "La sombra del viento",
-    autor: "Carlos Ruiz Zafón",
-    isbn: "9788408043645",
-    portada: "https://imagessl0.casadellibro.com/a/l/t5/00/9788408043600.jpg",
-    sinopsis: "Un amanecer de 1945, un muchacho es conducido por su padre a un misterioso lugar oculto en el corazón de la ciudad vieja: El Cementerio de los Libros Olvidados.",
-    impresionTotal: 75,
-    vendidosWeb: 12,
-    consignadosVendidos: 6,
-    consignadosNoVendidos: 9,
-    promocionales: 4,
-    regalados: 2,
-    ubicacionActual: "Oficina central"
+    titulo: "La nueva violencia moderna",
+    autor: "Sebastian Rodrigo",
+    isbn: "9789560817105",
+    portada: "https://isbnchile.cl/files/titulos/168550.jpg",
+    sinopsis: "Hace cinco años lo soñé: Una guerra contra el mundo moderno, botellas tiradas en la arena y carteles con la imagen de dos mujeres, quemándose en la costa de una magnífica ciudad tropical. Kanae Guiedxe, profesora de filosofía en un colegio de Viña del Mar, despierta sintiendo que vuelve a experimentar el mundo por primera vez. Atrapada en una consciencia infantilizada e incapaz de continuar con su vida, es salvada del colapso por un hombre misterioso, quien le pagará sumas millonarias a cambio de su participación en un extraño proyecto político y científico: Traer de vuelta el Antiguo Imperio Sochiano, civilización que en algún momento gobernó todo el universo observable y al que está conectada de una forma que ninguno de sus nuevos empleadores está dispuesto a explicarle. Entre la playa de Reñaca, los lagos y volcanes de Nicaragua, la selva de Guinea Ecuatorial y un exoplaneta de plantas moradas, La Nueva Violencia Moderna nos plantea una mezcla entre una narrativa épica y un drama personal, pasando por la ficción histórica y una crítica social muy original, que contradice muchas de las convenciones, no solo de la literatura, sino que también de nuestra sociedad actual.",
+    impresionTotal: 1040,
+    vendidosWeb: 10,
+    consignadosVendidos: 4,
+    consignadosNoVendidos: 229,
+    promocionales: 49,
+    regalados: 15,
+    ubicacionActual: "Bodega principal"
   }
 ];
 
@@ -78,6 +78,8 @@ export const Stock = () => {
   const totalPromocionales = books.reduce((sum, book) => sum + book.promocionales, 0);
   const totalRegalados = books.reduce((sum, book) => sum + book.regalados, 0);
   const totalLibros = totalVendidosWeb + totalConsignadosVendidos + totalConsignadosNoVendidos + totalPromocionales + totalRegalados;
+  // Cálculo de libros en bodega (impresión total - (vendidos + no vendidos))
+  const enBodega = totalImpresion - totalLibros;
 
   // Función para abrir el formulario para añadir un nuevo libro
   const handleAddBook = () => {
@@ -188,6 +190,10 @@ export const Stock = () => {
         <div className="summary-card regalados">
           <div className="summary-card-title">Regalados</div>
           <div className="summary-card-value">{totalRegalados}</div>
+        </div>
+        <div className="summary-card en-bodega">
+          <div className="summary-card-title">En Bodega</div>
+          <div className="summary-card-value">{enBodega}</div>
         </div>
         <div className="summary-card total">
           <div className="summary-card-title">Total</div>

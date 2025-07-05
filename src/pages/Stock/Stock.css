@@ -256,6 +256,10 @@
   border-left: 4px solid #e74c3c;
 }
 
+.summary-card.en-bodega {
+  border-left: 4px solid #2196F3;
+}
+
 .summary-card.total {
   border-left: 4px solid #2c3e50;
 }

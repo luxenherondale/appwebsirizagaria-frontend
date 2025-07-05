@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Index.css";
 
@@ -76,6 +76,10 @@ const Index = () => {
           </button>
           
           {error && <div className="error-message">{error}</div>}
+          
+          <div className="form-footer">
+            ¿No tienes una cuenta? <Link to="/register" className="link">Regístrate aquí</Link>
+          </div>
         </form>
       </div>
       <div className="image-side" />

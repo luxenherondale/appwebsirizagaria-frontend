@@ -18,6 +18,12 @@
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
 }
 
 .logout-button {
@@ -53,7 +59,7 @@
     top: 0;
     left: 0;
     height: 100%;
-    z-index: 50;
+    z-index: 100;
   }
   
   .sidebar-closed {
@@ -62,6 +68,10 @@
   
   .sidebar-open {
     transform: translateX(0);
+  }
+
+  .content {
+    margin-left: 0;
   }
 }
 
@@ -178,6 +188,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  margin-left: 250px; /* Mismo ancho que el sidebar */
 }
 
 /* Estilos para el encabezado */
@@ -187,6 +198,9 @@
   display: flex;
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 90;
 }
 
 .menu-button {

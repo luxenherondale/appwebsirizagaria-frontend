@@ -60,6 +60,8 @@
     left: 0;
     height: 100%;
     z-index: 100;
+    width: 80%; /* Reducir el ancho en móviles */
+    max-width: 300px;
   }
   
   .sidebar-closed {
@@ -72,6 +74,77 @@
 
   .content {
     margin-left: 0;
+    width: 100%;
+  }
+  
+  .logout-button {
+    width: 100px;
+    height: 35px;
+    font-size: 1em;
+  }
+  
+  .user-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .user-info {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 85%;
+    padding: 1rem 0;
+  }
+  
+  .logout-button {
+    width: 90px;
+    height: 32px;
+    font-size: 0.9em;
+  }
+  
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+  
+  .user-name {
+    font-size: 0.95rem;
+  }
+  
+  .user-role {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .sidebar {
+    width: 90%;
+    padding: 0.8rem 0;
+  }
+  
+  .logout-button {
+    width: 85px;
+    height: 30px;
+    font-size: 0.85em;
+  }
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  
+  .user-name {
+    font-size: 0.9rem;
+  }
+  
+  .user-role {
+    font-size: 0.75rem;
   }
 }
 
@@ -89,10 +162,38 @@
   margin-right: 0.75rem;
 }
 
-.logo-text {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: white;
+@media (max-width: 768px) {
+  .logo-image {
+    height: 120px; /* Reducir tamaño del logo en móviles */
+  }
+  
+  .logo {
+    padding: 0 1rem 1rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-image {
+    height: 100px;
+  }
+  
+  .logo {
+    padding: 0 0.75rem 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .logo-image {
+    height: 80px;
+  }
+  
+  .logo {
+    padding: 0 0.6rem 0.6rem;
+    margin-bottom: 0.6rem;
+  }
 }
 
 /* Estilos para la navegación */
@@ -133,6 +234,48 @@
 .nav-icon {
   margin-right: 0.75rem;
   font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .nav-link {
+    padding: 0.6rem 1.2rem;
+  }
+  
+  .nav-icon {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .nav-icon {
+    font-size: 1rem;
+    margin-right: 0.6rem;
+  }
+  
+  .nav-item {
+    margin-bottom: 0.15rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .nav-icon {
+    font-size: 0.95rem;
+    margin-right: 0.5rem;
+  }
+  
+  .nav-item {
+    margin-bottom: 0.1rem;
+  }
 }
 
 /* Estilos para la sección de usuario */
@@ -181,6 +324,18 @@
   color: white;
 }
 
+@media (max-width: 480px) {
+  .user-section {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .user-section {
+    padding: 0.8rem;
+  }
+}
+
 /* Estilos para el contenido principal */
 .content {
   flex: 1;
@@ -189,6 +344,14 @@
   flex-direction: column;
   min-height: 100vh;
   margin-left: 250px; /* Mismo ancho que el sidebar */
+  transition: margin-left 0.3s ease; /* Añadir transición suave */
+}
+
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 
 /* Estilos para el encabezado */
@@ -216,12 +379,44 @@
   .menu-button {
     display: block;
   }
+  
+  .header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .page-title {
+    font-size: 1.25rem;
+  }
 }
 
-.page-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0;
+@media (max-width: 480px) {
+  .header {
+    padding: 0.6rem 0.75rem;
+  }
+  
+  .menu-button {
+    font-size: 1.3rem;
+    margin-right: 0.75rem;
+  }
+  
+  .page-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    padding: 0.5rem 0.6rem;
+  }
+  
+  .menu-button {
+    font-size: 1.2rem;
+    margin-right: 0.6rem;
+  }
+  
+  .page-title {
+    font-size: 1rem;
+  }
 }
 
 /* Estilos para el overlay que aparece al abrir el menú en móvil */
@@ -246,4 +441,22 @@
 .content-container {
   padding: 1.5rem;
   flex: 1;
+}
+
+@media (max-width: 768px) {
+  .content-container {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-container {
+    padding: 1rem 0.75rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .content-container {
+    padding: 0.8rem 0.6rem;
+  }
 }

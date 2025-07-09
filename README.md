@@ -20,49 +20,48 @@ Este proyecto es la interfaz web para la gestión y control de stock, ventas, co
 ## **Tecnologías**
 
 - [React](https://react.dev/)
-- [Vite](https://vitejs.dev/)
-- [React Router](https://reactrouter.com/)
-- [normalize.css](https://necolas.github.io/normalize.css/)
+- [Vite]
+- [React Router]
+- [normalize.css](
 - Arquitectura por componentes y CSS modular
-- Estructura profesional para proyectos medianos y grandes
-
----
+- ***
 
 ## **Estructura de carpetas**
 
 ``
 src/
 │
-├── assets/            # Recursos estáticos como imágenes, iconos, etc.
-├── components/        # Componentes React reutilizables
-│     ├── App/         # Componente principal de la aplicación
-│     ├── Footer/      # Componente de pie de página
-│     ├── Main/        # Layout principal de la aplicación
-│     └── ...
+├── assets/ # Recursos estáticos como imágenes, iconos, etc.
+├── components/ # Componentes React reutilizables
+│ ├── App/ # Componente principal de la aplicación
+│ ├── Footer/ # Componente de pie de página
+│ ├── Main/ # Layout principal de la aplicación
+│ └── ...
 │
-├── config/            # Configuraciones de la aplicación
-│     └── api.js       # Configuración centralizada de la API
+├── config/ # Configuraciones de la aplicación
+│ └── api.js # Configuración centralizada de la API
 │
-├── contexts/          # Contextos de React para estado global
-│     └── AuthContext.jsx  # Contexto de autenticación
+├── contexts/ # Contextos de React para estado global
+│ └── AuthContext.jsx # Contexto de autenticación
 │
-├── images/            # Imágenes y assets gráficos
+├── images/ # Imágenes y assets gráficos
 │
-├── pages/             # Componentes de páginas completas
-│     ├── Contabilidad/    # Módulo de contabilidad
-│     ├── Index/           # Página de inicio de sesión
-│     ├── Inicio/          # Dashboard principal
-│     ├── NotFound/        # Página 404
-│     ├── Register/        # Página de registro
-│     └── Stock/           # Módulo de gestión de stock
+├── pages/ # Componentes de páginas completas
+│ ├── Contabilidad/ # Módulo de contabilidad
+│ ├── Index/ # Página de inicio de sesión
+│ ├── Inicio/ # Dashboard principal
+│ ├── NotFound/ # Página 404
+│ ├── Register/ # Página de registro
+│ └── Stock/ # Módulo de gestión de stock
 │
-├── services/          # Servicios para comunicación con la API
-│     ├── bookService.js   # Servicio para gestión de libros
-│     └── userService.js   # Servicio para gestión de usuarios
+├── services/ # Servicios para comunicación con la API
+│ ├── bookService.js # Servicio para gestión de libros
+│ └── userService.js # Servicio para gestión de usuarios
 │
-├── utils/             # Funciones utilitarias y helpers
+├── utils/ # Funciones utilitarias y helpers
 │
-└── vendor/            # Recursos externos como fuentes y normalize.css
+└── vendor/ # Recursos externos como fuentes y normalize.css
+
 ```
 
 --
@@ -81,7 +80,4 @@ Currently, two official plugins are available:
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 .......
 
-Usuarios predeterminados:
-Admin: admin@sirizagaria.com / admin123
-Editor: editor@sirizagaria.com / editor123
-Lector: lector@sirizagaria.com / lector123
+```

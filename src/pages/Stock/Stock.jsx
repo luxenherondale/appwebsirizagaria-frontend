@@ -1,74 +1,65 @@
 import { useState, useEffect } from "react";
 import "./Stock.css";
+import MainApi from "../../utils/MainApi";
 
-// Datos de ejemplo para desarrollo
-const initialBooks = [
-  {
-    id: 1,
-    titulo: "El jardín de las mariposas",
-    autor: "Dot Hutchison",
-    isbn: "9788416387588",
-    portada: "https://m.media-amazon.com/images/I/71jLBXtWJWL._AC_UF1000,1000_QL80_.jpg",
-    sinopsis: "Cerca de un aislado bosque, un jardinero cultiva las más hermosas mariposas. Las atrapa y colecciona, añadiéndolas a su jardín. Ellas son su arte y su obsesión. A las chicas las llama Las Mariposas... Y están cautivas.",
-    impresionTotal: 50,
-    vendidosWeb: 15,
-    consignadosVendidos: 8,
-    consignadosNoVendidos: 12,
-    promocionales: 5,
-    regalados: 3,
-    ubicacionActual: "Bodega principal"
-  },
-  {
-    id: 2,
-    titulo: "Cien años de soledad",
-    autor: "Gabriel García Márquez",
-    isbn: "9788497592208",
-    portada: "https://images.penguinrandomhouse.com/cover/9780307474728",
-    sinopsis: "La historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo.",
-    impresionTotal: 100,
-    vendidosWeb: 25,
-    consignadosVendidos: 18,
-    consignadosNoVendidos: 7,
-    promocionales: 10,
-    regalados: 5,
-    ubicacionActual: "Librería El Ateneo"
-  },
-  {
-    id: 3,
-    titulo: "La nueva violencia moderna",
-    autor: "Sebastian Rodrigo",
-    isbn: "9789560817105",
-    portada: "https://isbnchile.cl/files/titulos/168550.jpg",
-    sinopsis: "Hace cinco años lo soñé: Una guerra contra el mundo moderno, botellas tiradas en la arena y carteles con la imagen de dos mujeres, quemándose en la costa de una magnífica ciudad tropical. Kanae Guiedxe, profesora de filosofía en un colegio de Viña del Mar, despierta sintiendo que vuelve a experimentar el mundo por primera vez. Atrapada en una consciencia infantilizada e incapaz de continuar con su vida, es salvada del colapso por un hombre misterioso, quien le pagará sumas millonarias a cambio de su participación en un extraño proyecto político y científico: Traer de vuelta el Antiguo Imperio Sochiano, civilización que en algún momento gobernó todo el universo observable y al que está conectada de una forma que ninguno de sus nuevos empleadores está dispuesto a explicarle. Entre la playa de Reñaca, los lagos y volcanes de Nicaragua, la selva de Guinea Ecuatorial y un exoplaneta de plantas moradas, La Nueva Violencia Moderna nos plantea una mezcla entre una narrativa épica y un drama personal, pasando por la ficción histórica y una crítica social muy original, que contradice muchas de las convenciones, no solo de la literatura, sino que también de nuestra sociedad actual.",
-    impresionTotal: 1040,
-    vendidosWeb: 10,
-    consignadosVendidos: 4,
-    consignadosNoVendidos: 229,
-    promocionales: 49,
-    regalados: 15,
-    ubicacionActual: "Bodega principal"
-  }
-];
+// Instanciar la API
+const api = new MainApi();
 
 export const Stock = () => {
   // Estados para manejar los libros y el formulario
-  const [books, setBooks] = useState(initialBooks);
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [currentBook, setCurrentBook] = useState(null);
   const [formData, setFormData] = useState({
-    titulo: "",
-    autor: "",
+    title: "",
+    author: "",
     isbn: "",
     portada: "",
     sinopsis: "",
-    impresionTotal: 0,
-    vendidosWeb: 0,
+    stock: 0,
+    sold: 0,
     consignadosVendidos: 0,
     consignadosNoVendidos: 0,
     promocionales: 0,
     regalados: 0,
     ubicacionActual: ""
   });
+
+  // Cargar libros al montar el componente
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        setLoading(true);
+        const response = await api.getBooks();
+        if (response && response.books) {
+          setBooks(response.books.map(book => ({
+            id: book.id,
+            titulo: book.title,
+            autor: book.author,
+            isbn: book.isbn,
+            portada: book.portada || "https://via.placeholder.com/150",
+            sinopsis: book.sinopsis || "Sin sinopsis disponible",
+            impresionTotal: book.stock + book.sold,
+            vendidosWeb: book.sold,
+            consignadosVendidos: book.consignadosVendidos || 0,
+            consignadosNoVendidos: book.consignadosNoVendidos || 0,
+            promocionales: book.promocionales || 0,
+            regalados: book.regalados || 0,
+            ubicacionActual: book.ubicacionActual || "Bodega principal"
+          })));
+        }
+      } catch (err) {
+        console.error("Error al cargar libros:", err);
+        setError("No se pudieron cargar los libros. Por favor, intenta de nuevo más tarde.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
 
   // Cálculos para las tarjetas de resumen
   const totalImpresion = books.reduce((sum, book) => sum + book.impresionTotal, 0);
@@ -85,13 +76,13 @@ export const Stock = () => {
   const handleAddBook = () => {
     setCurrentBook(null);
     setFormData({
-      titulo: "",
-      autor: "",
+      title: "",
+      author: "",
       isbn: "",
       portada: "",
       sinopsis: "",
-      impresionTotal: 0,
-      vendidosWeb: 0,
+      stock: 0,
+      sold: 0,
       consignadosVendidos: 0,
       consignadosNoVendidos: 0,
       promocionales: 0,
@@ -105,13 +96,13 @@ export const Stock = () => {
   const handleEditBook = (book) => {
     setCurrentBook(book);
     setFormData({
-      titulo: book.titulo,
-      autor: book.autor,
+      title: book.titulo,
+      author: book.autor,
       isbn: book.isbn,
       portada: book.portada,
       sinopsis: book.sinopsis,
-      impresionTotal: book.impresionTotal,
-      vendidosWeb: book.vendidosWeb,
+      stock: book.impresionTotal - book.vendidosWeb,
+      sold: book.vendidosWeb,
       consignadosVendidos: book.consignadosVendidos,
       consignadosNoVendidos: book.consignadosNoVendidos,
       promocionales: book.promocionales,
@@ -122,9 +113,15 @@ export const Stock = () => {
   };
 
   // Función para eliminar un libro
-  const handleDeleteBook = (id) => {
+  const handleDeleteBook = async (id) => {
     if (window.confirm("¿Estás seguro de que deseas eliminar este libro?")) {
-      setBooks(books.filter(book => book.id !== id));
+      try {
+        await api.deleteBook(id);
+        setBooks(books.filter(book => book.id !== id));
+      } catch (err) {
+        console.error("Error al eliminar el libro:", err);
+        alert("No se pudo eliminar el libro. Por favor, intenta de nuevo más tarde.");
+      }
     }
   };
 
@@ -132,7 +129,7 @@ export const Stock = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     // Convertir a número si es un campo numérico
-    const numericFields = ['impresionTotal', 'vendidosWeb', 'consignadosVendidos', 'consignadosNoVendidos', 'promocionales', 'regalados'];
+    const numericFields = ['stock', 'sold', 'consignadosVendidos', 'consignadosNoVendidos', 'promocionales', 'regalados'];
     const processedValue = numericFields.includes(name) ? parseInt(value, 10) || 0 : value;
     
     setFormData({
@@ -142,26 +139,95 @@ export const Stock = () => {
   };
 
   // Función para guardar un libro (nuevo o editado)
-  const handleSaveBook = (e) => {
+  const handleSaveBook = async (e) => {
     e.preventDefault();
     
-    if (currentBook) {
-      // Actualizar libro existente
-      setBooks(books.map(book => 
-        book.id === currentBook.id ? { ...book, ...formData } : book
-      ));
-    } else {
-      // Añadir nuevo libro
-      const newBook = {
-        ...formData,
-        id: Date.now() // Generar un ID único basado en la fecha actual
+    try {
+      // Preparar datos para la API
+      const bookData = {
+        title: formData.title,
+        author: formData.author,
+        isbn: formData.isbn,
+        portada: formData.portada,
+        sinopsis: formData.sinopsis,
+        stock: formData.stock,
+        sold: formData.sold,
+        consignadosVendidos: formData.consignadosVendidos,
+        consignadosNoVendidos: formData.consignadosNoVendidos,
+        promocionales: formData.promocionales,
+        regalados: formData.regalados,
+        ubicacionActual: formData.ubicacionActual
       };
-      setBooks([...books, newBook]);
+      
+      let response;
+      
+      if (currentBook) {
+        // Actualizar libro existente
+        response = await api.updateBook(currentBook.id, bookData);
+        if (response && response.book) {
+          // Actualizar el estado local con el libro actualizado
+          const updatedBook = {
+            id: response.book.id,
+            titulo: response.book.title,
+            autor: response.book.author,
+            isbn: response.book.isbn,
+            portada: response.book.portada || "https://via.placeholder.com/150",
+            sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
+            impresionTotal: response.book.stock + response.book.sold,
+            vendidosWeb: response.book.sold,
+            consignadosVendidos: response.book.consignadosVendidos || 0,
+            consignadosNoVendidos: response.book.consignadosNoVendidos || 0,
+            promocionales: response.book.promocionales || 0,
+            regalados: response.book.regalados || 0,
+            ubicacionActual: response.book.ubicacionActual || "Bodega principal"
+          };
+          
+          setBooks(books.map(book => 
+            book.id === currentBook.id ? updatedBook : book
+          ));
+        }
+      } else {
+        // Añadir nuevo libro
+        response = await api.createBook(bookData);
+        if (response && response.book) {
+          // Añadir el nuevo libro al estado local
+          const newBook = {
+            id: response.book.id,
+            titulo: response.book.title,
+            autor: response.book.author,
+            isbn: response.book.isbn,
+            portada: response.book.portada || "https://via.placeholder.com/150",
+            sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
+            impresionTotal: response.book.stock + response.book.sold,
+            vendidosWeb: response.book.sold,
+            consignadosVendidos: response.book.consignadosVendidos || 0,
+            consignadosNoVendidos: response.book.consignadosNoVendidos || 0,
+            promocionales: response.book.promocionales || 0,
+            regalados: response.book.regalados || 0,
+            ubicacionActual: response.book.ubicacionActual || "Bodega principal"
+          };
+          
+          setBooks([...books, newBook]);
+        }
+      }
+      
+      // Cerrar el formulario
+      setShowForm(false);
+    } catch (err) {
+      console.error("Error al guardar el libro:", err);
+      alert("No se pudo guardar el libro. Por favor, intenta de nuevo más tarde.");
     }
-    
-    // Cerrar el formulario
-    setShowForm(false);
   };
+
+  // Mostrar mensaje de carga
+  if (loading) {
+    return <div className="loading">Cargando libros...</div>;
+  }
+
+  // Mostrar mensaje de error
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
   return (
     <div className="stock-container">
@@ -313,8 +379,8 @@ export const Stock = () => {
                     className="form-input"
                     type="text"
                     id="titulo"
-                    name="titulo"
-                    value={formData.titulo}
+                    name="title"
+                    value={formData.title}
                     onChange={handleInputChange}
                     required
                   />
@@ -325,8 +391,8 @@ export const Stock = () => {
                     className="form-input"
                     type="text"
                     id="autor"
-                    name="autor"
-                    value={formData.autor}
+                    name="author"
+                    value={formData.author}
                     onChange={handleInputChange}
                     required
                   />
@@ -378,9 +444,9 @@ export const Stock = () => {
                   <input
                     className="form-input"
                     type="number"
-                    id="impresionTotal"
-                    name="impresionTotal"
-                    value={formData.impresionTotal}
+                    id="stock"
+                    name="stock"
+                    value={formData.stock}
                     onChange={handleInputChange}
                     min="0"
                   />
@@ -390,9 +456,9 @@ export const Stock = () => {
                   <input
                     className="form-input"
                     type="number"
-                    id="vendidosWeb"
-                    name="vendidosWeb"
-                    value={formData.vendidosWeb}
+                    id="sold"
+                    name="sold"
+                    value={formData.sold}
                     onChange={handleInputChange}
                     min="0"
                   />

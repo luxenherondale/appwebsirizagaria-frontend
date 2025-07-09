@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNotification } from "../../contexts/NotificationContext";
 import { Footer } from "../Footer/Footer";
 import "./Main.css";
 
@@ -38,6 +39,8 @@ const getNavItems = (role) => {
 export const MainLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { success } = useNotification();
+  const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
   
@@ -47,6 +50,12 @@ export const MainLayout = ({ children }) => {
   
   const closeSidebar = () => {
     setSidebarOpen(false);
+  };
+  
+  const handleLogout = () => {
+    logout();
+    success("Has cerrado sesión correctamente");
+    navigate("/");
   };
   
   const navItems = getNavItems(user?.role);
@@ -87,7 +96,7 @@ export const MainLayout = ({ children }) => {
             <div className="user-name">{user?.name}</div>
             <div className="user-role">{user?.role === 'admin' ? 'Administrador' : user?.role === 'editor' ? 'Editor' : 'Lector'}</div>
           </div>
-          <button className="logout-button" onClick={logout} title="Cerrar sesión"> Salir
+          <button className="logout-button" onClick={handleLogout} title="Cerrar sesión"> Salir
           </button>
         </div>
       </aside>

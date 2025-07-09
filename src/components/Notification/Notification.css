@@ -1,0 +1,101 @@
+/**
+ * Estilos para el componente Notification
+ * Siguiendo los estándares de diseño de Siriza Agaria
+ */
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 300px;
+  max-width: 450px;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  z-index: 1100;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.notification.hide {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.notification-icon {
+  margin-right: 12px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-message {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.notification-close:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Tipos de notificación */
+.notification-success {
+  background-color: #e8f5e9;
+  border-left: 4px solid #28a745;
+}
+
+.notification-error {
+  background-color: #fdecea;
+  border-left: 4px solid #dc3545;
+}
+
+.notification-warning {
+  background-color: #fff3e0;
+  border-left: 4px solid #ffa000;
+}
+
+.notification-info {
+  background-color: #e3f2fd;
+  border-left: 4px solid #0288d1;
+}
+
+/* Animación para múltiples notificaciones */
+.notification + .notification {
+  margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .notification {
+    min-width: auto;
+    max-width: calc(100% - 40px);
+    width: calc(100% - 40px);
+  }
+}

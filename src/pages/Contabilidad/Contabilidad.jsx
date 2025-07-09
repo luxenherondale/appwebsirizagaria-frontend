@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Contabilidad.css';
+import MainApi from '../../utils/MainApi';
+
+// Instanciar la API
+const api = new MainApi();
 
 export const Contabilidad = () => {
   // Estados para manejar los datos de contabilidad
-  const [transacciones, setTransacciones] = useState([
-    { id: 1, fecha: '2025-06-01', concepto: 'Venta de libros', tipo: 'ingreso', monto: 1500.00, categoria: 'Ventas' },
-    { id: 2, fecha: '2025-06-05', concepto: 'Pago de impresión', tipo: 'gasto', monto: 800.00, categoria: 'Producción' },
-    { id: 3, fecha: '2025-06-10', concepto: 'Venta mayorista', tipo: 'ingreso', monto: 3200.00, categoria: 'Ventas' },
-    { id: 4, fecha: '2025-06-15', concepto: 'Pago de servicios', tipo: 'gasto', monto: 450.00, categoria: 'Operativos' },
-    { id: 5, fecha: '2025-06-20', concepto: 'Pago de diseño', tipo: 'gasto', monto: 1200.00, categoria: 'Producción' }
-  ]);
+  const [transacciones, setTransacciones] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   const [filtroTipo, setFiltroTipo] = useState('todos');
   const [filtroCategoria, setFiltroCategoria] = useState('todas');
@@ -21,6 +21,33 @@ export const Contabilidad = () => {
     monto: '',
     categoria: ''
   });
+
+  // Cargar gastos al montar el componente
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        setLoading(true);
+        const response = await api.getExpenses();
+        if (response && response.expenses) {
+          setTransacciones(response.expenses.map(expense => ({
+            id: expense.id,
+            fecha: expense.date ? expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
+            concepto: expense.concept || expense.concepto,
+            tipo: expense.type || expense.tipo || 'gasto',
+            monto: expense.amount || expense.monto || 0,
+            categoria: expense.category || expense.categoria || 'Otros'
+          })));
+        }
+      } catch (err) {
+        console.error("Error al cargar gastos:", err);
+        setError("No se pudieron cargar los datos de contabilidad. Por favor, intenta de nuevo más tarde.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
 
   // Categorías disponibles
   const categorias = ['Ventas', 'Producción', 'Operativos', 'Marketing', 'Administrativos', 'Otros'];
@@ -71,32 +98,86 @@ export const Contabilidad = () => {
   };
 
   // Guardar transacción
-  const guardarTransaccion = (e) => {
+  const guardarTransaccion = async (e) => {
     e.preventDefault();
     
-    if (transaccionActual.id) {
-      // Actualizar existente
-      setTransacciones(transacciones.map(t => 
-        t.id === transaccionActual.id ? transaccionActual : t
-      ));
-    } else {
-      // Crear nueva
-      const nuevaTransaccion = {
-        ...transaccionActual,
-        id: Date.now()
+    try {
+      // Preparar datos para la API
+      const expenseData = {
+        concept: transaccionActual.concepto,
+        date: transaccionActual.fecha,
+        amount: parseFloat(transaccionActual.monto),
+        category: transaccionActual.categoria,
+        type: transaccionActual.tipo
       };
-      setTransacciones([...transacciones, nuevaTransaccion]);
+      
+      let response;
+      
+      if (transaccionActual.id) {
+        // Actualizar existente
+        response = await api.updateExpense(transaccionActual.id, expenseData);
+        if (response && response.expense) {
+          // Actualizar el estado local con la transacción actualizada
+          const updatedExpense = {
+            id: response.expense.id,
+            fecha: response.expense.date ? response.expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
+            concepto: response.expense.concept || response.expense.concepto,
+            tipo: response.expense.type || response.expense.tipo || 'gasto',
+            monto: response.expense.amount || response.expense.monto || 0,
+            categoria: response.expense.category || response.expense.categoria || 'Otros'
+          };
+          
+          setTransacciones(transacciones.map(t => 
+            t.id === transaccionActual.id ? updatedExpense : t
+          ));
+        }
+      } else {
+        // Crear nueva
+        response = await api.createExpense(expenseData);
+        if (response && response.expense) {
+          // Añadir la nueva transacción al estado local
+          const newExpense = {
+            id: response.expense.id,
+            fecha: response.expense.date ? response.expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
+            concepto: response.expense.concept || response.expense.concepto,
+            tipo: response.expense.type || response.expense.tipo || 'gasto',
+            monto: response.expense.amount || response.expense.monto || 0,
+            categoria: response.expense.category || response.expense.categoria || 'Otros'
+          };
+          
+          setTransacciones([...transacciones, newExpense]);
+        }
+      }
+      
+      setModalAbierto(false);
+    } catch (err) {
+      console.error("Error al guardar la transacción:", err);
+      alert("No se pudo guardar la transacción. Por favor, intenta de nuevo más tarde.");
     }
-    
-    setModalAbierto(false);
   };
 
   // Eliminar transacción
-  const eliminarTransaccion = (id) => {
+  const eliminarTransaccion = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar esta transacción?')) {
-      setTransacciones(transacciones.filter(t => t.id !== id));
+      try {
+        await api.deleteExpense(id);
+        setTransacciones(transacciones.filter(t => t.id !== id));
+      } catch (err) {
+        console.error("Error al eliminar la transacción:", err);
+        alert("No se pudo eliminar la transacción. Por favor, intenta de nuevo más tarde.");
+      }
     }
   };
+
+  // Mostrar mensaje de carga
+  if (loading) {
+    return <div className="loading">Cargando datos de contabilidad...</div>;
+  }
+
+  // Mostrar mensaje de error
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
   return (
     <div className="contabilidad-container">

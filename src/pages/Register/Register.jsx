@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import Modal from "../../components/Modal/Modal";
 import "./Register.css";
 
 const Register = () => {
@@ -12,8 +13,26 @@ const Register = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { register, error } = useAuth();
   const navigate = useNavigate();
+
+  // Validación instantánea cuando cambian los valores
+  useEffect(() => {
+    validateField('name', formData.name);
+  }, [formData.name]);
+
+  useEffect(() => {
+    validateField('email', formData.email);
+  }, [formData.email]);
+
+  useEffect(() => {
+    validateField('password', formData.password);
+  }, [formData.password]);
+
+  useEffect(() => {
+    validateField('confirmPassword', formData.confirmPassword);
+  }, [formData.confirmPassword]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,46 +40,62 @@ const Register = () => {
       ...formData,
       [name]: value
     });
+  };
+
+  const validateField = (fieldName, value) => {
+    let newError = "";
     
-    // Limpiar error específico cuando el usuario comienza a escribir
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: ""
-      });
+    switch (fieldName) {
+      case 'name':
+        if (value.trim() === "") {
+          newError = "El nombre es obligatorio";
+        }
+        break;
+      
+      case 'email':
+        if (value.trim() === "") {
+          newError = "El correo electrónico es obligatorio";
+        } else {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(value)) {
+            newError = "Formato de correo electrónico inválido";
+          }
+        }
+        break;
+      
+      case 'password':
+        if (!value) {
+          newError = "La contraseña es obligatoria";
+        } else if (value.length < 6) {
+          newError = "La contraseña debe tener al menos 6 caracteres";
+        }
+        break;
+      
+      case 'confirmPassword':
+        if (value !== formData.password) {
+          newError = "Las contraseñas no coinciden";
+        }
+        break;
+      
+      default:
+        break;
     }
+    
+    setErrors(prev => ({
+      ...prev,
+      [fieldName]: newError
+    }));
+    
+    return !newError;
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const nameValid = validateField('name', formData.name);
+    const emailValid = validateField('email', formData.email);
+    const passwordValid = validateField('password', formData.password);
+    const confirmPasswordValid = validateField('confirmPassword', formData.confirmPassword);
     
-    // Validar nombre
-    if (!formData.name.trim()) {
-      newErrors.name = "El nombre es obligatorio";
-    }
-    
-    // Validar email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      newErrors.email = "El correo electrónico es obligatorio";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Formato de correo electrónico inválido";
-    }
-    
-    // Validar contraseña
-    if (!formData.password) {
-      newErrors.password = "La contraseña es obligatoria";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "La contraseña debe tener al menos 6 caracteres";
-    }
-    
-    // Validar confirmación de contraseña
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Las contraseñas no coinciden";
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return nameValid && emailValid && passwordValid && confirmPasswordValid;
   };
 
   const handleSubmit = async (e) => {
@@ -73,13 +108,22 @@ const Register = () => {
     setIsLoading(true);
     
     try {
+      // Registrar al usuario usando el contexto de autenticación
       await register(formData);
-      navigate("/");
+      
+      // Mostrar modal de éxito en lugar de navegar inmediatamente
+      setShowSuccessModal(true);
     } catch (err) {
       console.error("Error al registrar usuario:", err);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    // Navegar a la página de inicio después de cerrar el modal
+    navigate("/");
   };
 
   return (
@@ -155,7 +199,11 @@ const Register = () => {
             {errors.confirmPassword && <div className="error-text">{errors.confirmPassword}</div>}
           </div>
           
-          <button className="button" type="submit" disabled={isLoading}>
+          <button 
+            className="button" 
+            type="submit" 
+            disabled={isLoading || Object.values(errors).some(error => error !== "")}
+          >
             {isLoading ? "Registrando..." : "Registrarse"}
           </button>
           
@@ -167,6 +215,23 @@ const Register = () => {
         </form>
       </div>
       <div className="image-side" />
+
+      {/* Modal de registro exitoso */}
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        title="Registro Exitoso"
+      >
+        <div className="modal-success-icon">✅</div>
+        <p className="modal-success-message">
+          ¡Tu cuenta ha sido creada exitosamente!
+        </p>
+        <div className="modal-actions">
+          <button className="modal-button" onClick={handleCloseSuccessModal}>
+            Iniciar Sesión
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -30,25 +30,39 @@ Este proyecto es la interfaz web para la gestión y control de stock, ventas, co
 
 ## **Estructura de carpetas**
 
-```plaintext
+``
 src/
 │
-├── components/        # Componentes React (cada uno en su carpeta)
-│     ├── App/
-│     ├── Header/
-│     ├── Main/
-│     ├── Navigation/
-│     ├── Footer/
-│     ├── Preloader/
+├── assets/            # Recursos estáticos como imágenes, iconos, etc.
+├── components/        # Componentes React reutilizables
+│     ├── App/         # Componente principal de la aplicación
+│     ├── Footer/      # Componente de pie de página
+│     ├── Main/        # Layout principal de la aplicación
 │     └── ...
 │
-├── images/            # Imágenes y assets gráficos
-├── utils/             # Funciones utilitarias, helpers y lógica de API
-├── vendor/            # Fuentes, normalize.css y recursos externos
-│     ├── fonts/
-│     └── normalize.css
+├── config/            # Configuraciones de la aplicación
+│     └── api.js       # Configuración centralizada de la API
 │
-└── index.css          # CSS global
+├── contexts/          # Contextos de React para estado global
+│     └── AuthContext.jsx  # Contexto de autenticación
+│
+├── images/            # Imágenes y assets gráficos
+│
+├── pages/             # Componentes de páginas completas
+│     ├── Contabilidad/    # Módulo de contabilidad
+│     ├── Index/           # Página de inicio de sesión
+│     ├── Inicio/          # Dashboard principal
+│     ├── NotFound/        # Página 404
+│     ├── Register/        # Página de registro
+│     └── Stock/           # Módulo de gestión de stock
+│
+├── services/          # Servicios para comunicación con la API
+│     ├── bookService.js   # Servicio para gestión de libros
+│     └── userService.js   # Servicio para gestión de usuarios
+│
+├── utils/             # Funciones utilitarias y helpers
+│
+└── vendor/            # Recursos externos como fuentes y normalize.css
 ```
 
 --

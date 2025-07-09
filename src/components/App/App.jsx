@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "../../contexts/AuthContext";
+import { NotificationProvider } from "../../contexts/NotificationContext";
 import Index from "../../pages/Index/Index";
 import Register from "../../pages/Register/Register";
 import { Stock } from "../../pages/Stock/Stock";
@@ -11,7 +12,14 @@ import { useAuth } from "../../contexts/AuthContext";
 import NotFound from "../../pages/NotFound/NotFound";
 import "./App.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -25,10 +33,8 @@ const ProtectedRoute = ({ children }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    {/* <TooltipProvider>
-      <Toaster />
-      <Sonner /> */}
-      <BrowserRouter>
+    <BrowserRouter>
+      <NotificationProvider>
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -124,8 +130,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
-      </BrowserRouter>
-    {/* </TooltipProvider> */}
+      </NotificationProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 

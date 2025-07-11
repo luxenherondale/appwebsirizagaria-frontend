@@ -39,7 +39,7 @@ export const Stock = () => {
             titulo: book.title,
             autor: book.author,
             isbn: book.isbn,
-            portada: book.portada || "https://via.placeholder.com/150",
+            portada: book.portada || "/default-book-cover.svg",
             sinopsis: book.sinopsis || "Sin sinopsis disponible",
             impresionTotal: book.stock + book.sold,
             vendidosWeb: book.sold,
@@ -171,7 +171,7 @@ export const Stock = () => {
             titulo: response.book.title,
             autor: response.book.author,
             isbn: response.book.isbn,
-            portada: response.book.portada || "https://via.placeholder.com/150",
+            portada: response.book.portada || "/default-book-cover.svg",
             sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
             impresionTotal: response.book.stock + response.book.sold,
             vendidosWeb: response.book.sold,
@@ -196,7 +196,7 @@ export const Stock = () => {
             titulo: response.book.title,
             autor: response.book.author,
             isbn: response.book.isbn,
-            portada: response.book.portada || "https://via.placeholder.com/150",
+            portada: response.book.portada || "/default-book-cover.svg",
             sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
             impresionTotal: response.book.stock + response.book.sold,
             vendidosWeb: response.book.sold,
@@ -299,7 +299,7 @@ export const Stock = () => {
               <tr key={book.id}>
                 <td>
                   <img 
-                    src={book.portada || "https://via.placeholder.com/50x70?text=No+Image"} 
+                    src={book.portada || "/default-book-cover.svg"} 
                     alt={book.titulo}
                     className="book-cover"
                   />

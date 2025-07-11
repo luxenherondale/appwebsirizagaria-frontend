@@ -68,7 +68,7 @@ export const MainLayout = ({ children }) => {
         <div className="logo">
           <img className="logo-image" src="/logo.png" alt="Logo" onError={(e) => {
             e.target.onerror = null;
-            e.target.src = 'https://via.placeholder.com/50x50?text=SA';
+            e.target.src = '/default-avatar.png';
           }} />
         
         </div>

@@ -1,60 +1,76 @@
 import { useState, useEffect } from 'react';
 import './Inicio.css';
+import MainApi from '../../utils/MainApi';
 
 export const Inicio = () => {
   // Estados para almacenar los datos
   const [stockData, setStockData] = useState(null);
   const [contabilidadData, setContabilidadData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Datos de ejemplo para desarrollo (simulando una carga de datos)
+  // Instancia de la API
+  const api = new MainApi();
+
+  // Cargar datos reales de la API
   useEffect(() => {
-    // Simular carga de datos de stock
-    const stockMockData = [
-      {
-        id: 1,
-        titulo: "El jardín de las mariposas",
-        impresionTotal: 50,
-        vendidosWeb: 15,
-        consignadosVendidos: 8,
-        consignadosNoVendidos: 12,
-        promocionales: 5,
-        regalados: 3
-      },
-      {
-        id: 2,
-        titulo: "Cien años de soledad",
-        impresionTotal: 100,
-        vendidosWeb: 25,
-        consignadosVendidos: 18,
-        consignadosNoVendidos: 7,
-        promocionales: 10,
-        regalados: 5
-      },
-      {
-        id: 3,
-        titulo: "La nueva violencia moderna",
-        impresionTotal: 1040,
-        vendidosWeb: 10,
-        consignadosVendidos: 4,
-        consignadosNoVendidos: 229,
-        promocionales: 49,
-        regalados: 15
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Cargar datos de libros
+        const booksResponse = await api.getBooks();
+        console.log('Datos de libros cargados:', booksResponse);
+        
+        if (booksResponse && booksResponse.books) {
+          // Transformar los datos al formato esperado por el dashboard
+          const formattedBooks = booksResponse.books.map(book => ({
+            id: book.id,
+            titulo: book.title || book.titulo,
+            autor: book.author || book.autor,
+            impresionTotal: (parseInt(book.stock) || 0) + (parseInt(book.sold) || 0),
+            vendidosWeb: parseInt(book.sold) || 0,
+            consignadosVendidos: parseInt(book.consignadosVendidos) || 0,
+            consignadosNoVendidos: parseInt(book.consignadosNoVendidos) || 0,
+            promocionales: parseInt(book.promocionales) || 0,
+            regalados: parseInt(book.regalados) || 0
+          }));
+          
+          setStockData(formattedBooks);
+        } else {
+          throw new Error('No se pudieron cargar los datos de libros');
+        }
+        
+        // Cargar datos de gastos/ingresos
+        const expensesResponse = await api.getExpenses();
+        console.log('Datos de contabilidad cargados:', expensesResponse);
+        
+        if (expensesResponse && expensesResponse.expenses) {
+          // Transformar los datos al formato esperado por el dashboard
+          const formattedExpenses = expensesResponse.expenses.map(expense => ({
+            id: expense.id,
+            fecha: expense.date ? expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
+            concepto: expense.concept || expense.concepto,
+            tipo: expense.type || expense.tipo || 'gasto',
+            monto: parseFloat(expense.amount) || parseFloat(expense.monto) || 0,
+            categoria: expense.category || expense.categoria || 'Otros'
+          }));
+          
+          setContabilidadData(formattedExpenses);
+        } else {
+          throw new Error('No se pudieron cargar los datos de contabilidad');
+        }
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Error al cargar datos del dashboard:', err);
+        setError('No se pudieron cargar los datos. Por favor, intenta de nuevo más tarde.');
+        setLoading(false);
       }
-    ];
-
-    // Simular carga de datos de contabilidad
-    const contabilidadMockData = [
-      { id: 1, fecha: '2025-06-01', concepto: 'Venta de libros', tipo: 'ingreso', monto: 1500.00, categoria: 'Ventas' },
-      { id: 2, fecha: '2025-06-05', concepto: 'Pago de impresión', tipo: 'gasto', monto: 800.00, categoria: 'Producción' },
-      { id: 3, fecha: '2025-06-10', concepto: 'Venta mayorista', tipo: 'ingreso', monto: 3200.00, categoria: 'Ventas' },
-      { id: 4, fecha: '2025-06-15', concepto: 'Pago de servicios', tipo: 'gasto', monto: 450.00, categoria: 'Operativos' },
-      { id: 5, fecha: '2025-06-20', concepto: 'Pago de diseño', tipo: 'gasto', monto: 1200.00, categoria: 'Producción' }
-    ];
-
-    setStockData(stockMockData);
-    setContabilidadData(contabilidadMockData);
-    setLoading(false);
+    };
+    
+    fetchData();
   }, []);
 
   // Calcular totales de stock
@@ -157,6 +173,61 @@ export const Inicio = () => {
     return { totalIngresos, totalGastos, balance };
   };
 
+  // Calcular totales de contabilidad
+  const calcularTotalesContabilidad = () => {
+    if (!contabilidadData) return { totalIngresos: 0, totalGastos: 0, balance: 0 };
+
+    const totalIngresos = contabilidadData
+      .filter(item => item.tipo === 'ingreso')
+      .reduce((sum, item) => sum + item.monto, 0);
+      
+    const totalGastos = contabilidadData
+      .filter(item => item.tipo === 'gasto')
+      .reduce((sum, item) => sum + item.monto, 0);
+      
+    const balance = totalIngresos - totalGastos;
+    
+    return { totalIngresos, totalGastos, balance };
+  };
+
+  // Calcular datos por categoría
+  const calcularDatosPorCategoria = () => {
+    if (!contabilidadData) return [];
+    
+    const categorias = {};
+    
+    contabilidadData.forEach(item => {
+      const categoria = item.categoria || 'Otros';
+      
+      if (!categorias[categoria]) {
+        categorias[categoria] = { ingresos: 0, gastos: 0 };
+      }
+      
+      if (item.tipo === 'ingreso') {
+        categorias[categoria].ingresos += item.monto;
+      } else {
+        categorias[categoria].gastos += item.monto;
+      }
+    });
+    
+    return Object.entries(categorias).map(([nombre, datos]) => ({
+      nombre,
+      ingresos: datos.ingresos,
+      gastos: datos.gastos,
+      balance: datos.ingresos - datos.gastos
+    }));
+  };
+
+  // Mostrar mensaje de carga
+  if (loading) {
+    return <div className="loading">Cargando datos del dashboard...</div>;
+  }
+  
+  // Mostrar mensaje de error
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
+
   // Calcular datos para mostrar
   const totalesStock = calcularTotalesStock();
   const datosLibros = calcularDatosLibros();
@@ -167,46 +238,42 @@ export const Inicio = () => {
     <div className="inicio-container">
       <h1 className="inicio-titulo">Dashboard Editorial</h1>
       
-      {loading ? (
-        <div className="loading">Cargando datos...</div>
-      ) : (
-        <>
-          {/* Sección de Stock */}
-          <section className="dashboard-section">
-            <h2 className="section-titulo">Resumen de Stock</h2>
-            
-            <div className="dashboard-cards">
-              <div className="dashboard-card">
-                <h3>Porcentaje de Vendidos</h3>
-                <div className="porcentaje-container">
-                  <div className="porcentaje-circulo" style={{ '--porcentaje': `${totalesStock.porcentajeVendidos}%` }}>
-                    <span className="porcentaje-valor">{totalesStock.porcentajeVendidos}%</span>
-                  </div>
-                </div>
+      {/* Sección de Stock */}
+      <section className="dashboard-section">
+        <h2 className="section-titulo">Resumen de Stock</h2>
+        
+        <div className="dashboard-cards">
+          <div className="dashboard-card">
+            <h3>Porcentaje de Vendidos</h3>
+            <div className="porcentaje-container">
+              <div className="porcentaje-circulo" style={{ '--porcentaje': `${totalesStock.porcentajeVendidos}%` }}>
+                <span className="porcentaje-valor">{totalesStock.porcentajeVendidos}%</span>
               </div>
-              
-              <div className="dashboard-card">
-                <h3>Distribución de Libros</h3>
-                <div className="stats-container">
-                  <div className="stat-item">
-                    <div className="stat-label">Vendidos</div>
-                    <div className="stat-value">{totalesStock.totalVendidos}</div>
-                    <div className="stat-bar" style={{ width: `${(totalesStock.totalVendidos / totalesStock.totalImpresion) * 100}%`, backgroundColor: '#4CAF50' }}></div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-label">No Vendidos</div>
-                    <div className="stat-value">{totalesStock.totalNoVendidos}</div>
-                    <div className="stat-bar" style={{ width: `${(totalesStock.totalNoVendidos / totalesStock.totalImpresion) * 100}%`, backgroundColor: '#FF5722' }}></div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-label">En Bodega</div>
-                    <div className="stat-value">{totalesStock.enBodega}</div>
-                    <div className="stat-bar" style={{ width: `${(totalesStock.enBodega / totalesStock.totalImpresion) * 100}%`, backgroundColor: '#2196F3' }}></div>
-                  </div>
-                </div>
+            </div>
+          </div>
+          
+          <div className="dashboard-card">
+            <h3>Distribución de Libros</h3>
+            <div className="stats-container">
+              <div className="stat-item">
+                <div className="stat-label">Vendidos</div>
+                <div className="stat-value">{totalesStock.totalVendidos}</div>
+                <div className="stat-bar" style={{ width: `${(totalesStock.totalVendidos / totalesStock.totalImpresion) * 100}%`, backgroundColor: '#4CAF50' }}></div>
               </div>
-              
-              <div className="dashboard-card wide-card">
+              <div className="stat-item">
+                <div className="stat-label">No Vendidos</div>
+                <div className="stat-value">{totalesStock.totalNoVendidos}</div>
+                <div className="stat-bar" style={{ width: `${(totalesStock.totalNoVendidos / totalesStock.totalImpresion) * 100}%`, backgroundColor: '#FF5722' }}></div>
+              </div>
+              <div className="stat-item">
+                <div className="stat-label">En Bodega</div>
+                <div className="stat-value">{totalesStock.enBodega}</div>
+                <div className="stat-bar" style={{ width: `${(totalesStock.enBodega / totalesStock.totalImpresion) * 100}%`, backgroundColor: '#2196F3' }}></div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="dashboard-card wide-card">
                 <h3>Distribución por Libro</h3>
                 <div className="table-container">
                   <table className="dashboard-table">
@@ -296,8 +363,7 @@ export const Inicio = () => {
               </div>
             </div>
           </section>
-        </>
-      )}
+      
     </div>
   );
 };

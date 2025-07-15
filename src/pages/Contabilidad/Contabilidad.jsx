@@ -93,7 +93,12 @@ export const Contabilidad = () => {
 
   // Abrir modal para editar
   const abrirModalEditar = (transaccion) => {
-    setTransaccionActual({ ...transaccion });
+    console.log('Editando transacción con ID:', transaccion.id);
+    // Asegurar que el ID esté explícitamente establecido
+    setTransaccionActual({
+      id: transaccion.id, // Asegurar que el ID esté explícitamente establecido
+      ...transaccion
+    });
     setModalAbierto(true);
   };
 
@@ -103,73 +108,125 @@ export const Contabilidad = () => {
     
     try {
       // Validar datos antes de enviar
-      if (!transaccionActual.concepto || !transaccionActual.fecha || !transaccionActual.monto) {
-        alert("Por favor completa todos los campos requeridos");
+      if (!transaccionActual.concepto || !transaccionActual.concepto.trim()) {
+        alert("Por favor ingresa un concepto válido");
+        return;
+      }
+      
+      if (!transaccionActual.fecha) {
+        alert("Por favor selecciona una fecha válida");
+        return;
+      }
+      
+      if (!transaccionActual.monto) {
+        alert("Por favor ingresa un monto válido");
         return;
       }
 
       // Asegurar que el monto sea un número válido
       const montoNumerico = parseFloat(transaccionActual.monto);
-      if (isNaN(montoNumerico)) {
-        alert("El monto debe ser un número válido");
+      if (isNaN(montoNumerico) || montoNumerico <= 0) {
+        alert("El monto debe ser un número válido mayor que cero");
         return;
       }
 
-      // Preparar datos para la API
+      // Preparar datos para la API - asegurar que todos los campos tengan el formato correcto
       const expenseData = {
-        concept: transaccionActual.concepto,
-        date: transaccionActual.fecha,
+        concept: transaccionActual.concepto.trim(),
+        date: transaccionActual.fecha, // Asegurar formato YYYY-MM-DD
         amount: montoNumerico,
-        category: transaccionActual.categoria || 'Otros',
-        type: transaccionActual.tipo || 'gasto'
+        category: (transaccionActual.categoria && transaccionActual.categoria.trim()) || 'Otros',
+        type: (transaccionActual.tipo && transaccionActual.tipo.trim()) || 'gasto'
       };
       
+      console.log('Datos preparados para enviar a la API:', expenseData);
+      
       let response;
-      console.log('Enviando datos a la API:', expenseData);
       
       if (transaccionActual.id) {
-        // Actualizar existente
-        response = await api.updateExpense(transaccionActual.id, expenseData);
-        console.log('Respuesta de actualización:', response);
-        if (response && response.expense) {
-          // Actualizar el estado local con la transacción actualizada
-          const updatedExpense = {
-            id: response.expense.id,
-            fecha: response.expense.date ? response.expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
-            concepto: response.expense.concept || response.expense.concepto,
-            tipo: response.expense.type || response.expense.tipo || 'gasto',
-            monto: response.expense.amount || response.expense.monto || 0,
-            categoria: response.expense.category || response.expense.categoria || 'Otros'
-          };
+        // Verificar que el ID existe y es válido
+        const expenseId = transaccionActual.id;
+        if (!expenseId) {
+          throw new Error("ID de transacción no válido");
+        }
+        
+        console.log('Actualizando transacción con ID:', expenseId);
+        
+        try {
+          // Actualizar existente
+          response = await api.updateExpense(expenseId, expenseData);
+          console.log('Respuesta completa de actualización:', response);
           
-          setTransacciones(transacciones.map(t => 
-            t.id === transaccionActual.id ? updatedExpense : t
-          ));
-          alert("Transacción actualizada correctamente");
+          if (response && response.expense) {
+            // Actualizar el estado local con la transacción actualizada
+            const updatedExpense = {
+              id: response.expense.id,
+              fecha: response.expense.date ? response.expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
+              concepto: response.expense.concept || response.expense.concepto,
+              tipo: response.expense.type || response.expense.tipo || 'gasto',
+              monto: parseFloat(response.expense.amount || response.expense.monto || 0),
+              categoria: response.expense.category || response.expense.categoria || 'Otros'
+            };
+            
+            console.log('Transacción actualizada:', updatedExpense);
+            
+            // Actualizar el estado local con la transacción actualizada
+            setTransacciones(prevTransacciones => 
+              prevTransacciones.map(t => t.id === expenseId ? updatedExpense : t)
+            );
+            
+            alert("Transacción actualizada correctamente");
+            setModalAbierto(false);
+            setTransaccionActual(null); // Limpiar la transacción actual
+          } else {
+            console.error("Respuesta de API incompleta:", response);
+            throw new Error("La respuesta de la API no contiene los datos esperados");
+          }
+        } catch (updateError) {
+          console.error("Error específico al actualizar la transacción:", updateError);
+          console.error("Detalles adicionales:", updateError.message);
+          alert("No se pudo actualizar la transacción. Por favor, intenta de nuevo más tarde.");
         }
       } else {
-        // Crear nueva
-        response = await api.createExpense(expenseData);
-        console.log('Respuesta de creación:', response);
-        if (response && response.expense) {
-          // Añadir la nueva transacción al estado local
-          const newExpense = {
-            id: response.expense.id,
-            fecha: response.expense.date ? response.expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
-            concepto: response.expense.concept || response.expense.concepto,
-            tipo: response.expense.type || response.expense.tipo || 'gasto',
-            monto: response.expense.amount || response.expense.monto || 0,
-            categoria: response.expense.category || response.expense.categoria || 'Otros'
-          };
+        // Crear nueva transacción
+        console.log('Creando nueva transacción con datos:', expenseData);
+        
+        try {
+          response = await api.createExpense(expenseData);
+          console.log('Respuesta completa de creación:', response);
           
-          setTransacciones([...transacciones, newExpense]);
-          alert("Transacción guardada correctamente");
+          if (response && response.expense) {
+            // Añadir la nueva transacción al estado local
+            const newExpense = {
+              id: response.expense.id,
+              fecha: response.expense.date ? response.expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
+              concepto: response.expense.concept || response.expense.concepto,
+              tipo: response.expense.type || response.expense.tipo || 'gasto',
+              monto: parseFloat(response.expense.amount || response.expense.monto || 0),
+              categoria: response.expense.category || response.expense.categoria || 'Otros'
+            };
+            
+            console.log('Nueva transacción creada:', newExpense);
+            
+            // Actualizar el estado local con la nueva transacción
+            setTransacciones(prevTransacciones => [...prevTransacciones, newExpense]);
+            
+            alert("Transacción guardada correctamente");
+            setModalAbierto(false);
+            setTransaccionActual(null); // Limpiar la transacción actual
+          } else {
+            console.error("Respuesta de API incompleta:", response);
+            throw new Error("La respuesta de la API no contiene los datos esperados");
+          }
+        } catch (createError) {
+          console.error("Error específico al crear la transacción:", createError);
+          console.error("Detalles adicionales:", createError.message);
+          alert("No se pudo crear la transacción. Por favor, intenta de nuevo más tarde.");
         }
       }
-      
-      setModalAbierto(false);
     } catch (err) {
-      console.error("Error al guardar la transacción:", err);
+      console.error("Error general al guardar la transacción:", err);
+      console.error("Detalles adicionales:", err.message);
       alert("No se pudo guardar la transacción. Por favor, intenta de nuevo más tarde.");
     }
   };

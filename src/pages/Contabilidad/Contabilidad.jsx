@@ -102,20 +102,35 @@ export const Contabilidad = () => {
     e.preventDefault();
     
     try {
+      // Validar datos antes de enviar
+      if (!transaccionActual.concepto || !transaccionActual.fecha || !transaccionActual.monto) {
+        alert("Por favor completa todos los campos requeridos");
+        return;
+      }
+
+      // Asegurar que el monto sea un número válido
+      const montoNumerico = parseFloat(transaccionActual.monto);
+      if (isNaN(montoNumerico)) {
+        alert("El monto debe ser un número válido");
+        return;
+      }
+
       // Preparar datos para la API
       const expenseData = {
         concept: transaccionActual.concepto,
         date: transaccionActual.fecha,
-        amount: parseFloat(transaccionActual.monto),
-        category: transaccionActual.categoria,
-        type: transaccionActual.tipo
+        amount: montoNumerico,
+        category: transaccionActual.categoria || 'Otros',
+        type: transaccionActual.tipo || 'gasto'
       };
       
       let response;
+      console.log('Enviando datos a la API:', expenseData);
       
       if (transaccionActual.id) {
         // Actualizar existente
         response = await api.updateExpense(transaccionActual.id, expenseData);
+        console.log('Respuesta de actualización:', response);
         if (response && response.expense) {
           // Actualizar el estado local con la transacción actualizada
           const updatedExpense = {
@@ -130,10 +145,12 @@ export const Contabilidad = () => {
           setTransacciones(transacciones.map(t => 
             t.id === transaccionActual.id ? updatedExpense : t
           ));
+          alert("Transacción actualizada correctamente");
         }
       } else {
         // Crear nueva
         response = await api.createExpense(expenseData);
+        console.log('Respuesta de creación:', response);
         if (response && response.expense) {
           // Añadir la nueva transacción al estado local
           const newExpense = {
@@ -146,6 +163,7 @@ export const Contabilidad = () => {
           };
           
           setTransacciones([...transacciones, newExpense]);
+          alert("Transacción guardada correctamente");
         }
       }
       

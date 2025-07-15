@@ -143,52 +143,75 @@ export const Stock = () => {
     e.preventDefault();
     
     try {
+      // Validar datos antes de enviar
+      if (!formData.title || !formData.author || !formData.isbn) {
+        alert("Por favor completa los campos obligatorios: título, autor e ISBN");
+        return;
+      }
+
       // Preparar datos para la API
       const bookData = {
         title: formData.title,
         author: formData.author,
         isbn: formData.isbn,
-        portada: formData.portada,
-        sinopsis: formData.sinopsis,
-        stock: formData.stock,
-        sold: formData.sold,
-        consignadosVendidos: formData.consignadosVendidos,
-        consignadosNoVendidos: formData.consignadosNoVendidos,
-        promocionales: formData.promocionales,
-        regalados: formData.regalados,
-        ubicacionActual: formData.ubicacionActual
+        portada: formData.portada || "",
+        sinopsis: formData.sinopsis || "",
+        stock: parseInt(formData.stock) || 0,
+        sold: parseInt(formData.sold) || 0,
+        consignadosVendidos: parseInt(formData.consignadosVendidos) || 0,
+        consignadosNoVendidos: parseInt(formData.consignadosNoVendidos) || 0,
+        promocionales: parseInt(formData.promocionales) || 0,
+        regalados: parseInt(formData.regalados) || 0,
+        ubicacionActual: formData.ubicacionActual || "Bodega principal"
       };
       
       let response;
+      console.log('Enviando datos del libro a la API:', bookData);
       
       if (currentBook) {
         // Actualizar libro existente
-        response = await api.updateBook(currentBook.id, bookData);
-        if (response && response.book) {
-          // Actualizar el estado local con el libro actualizado
-          const updatedBook = {
-            id: response.book.id,
-            titulo: response.book.title,
-            autor: response.book.author,
-            isbn: response.book.isbn,
-            portada: response.book.portada || "/default-book-cover.png",
-            sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
-            impresionTotal: response.book.stock + response.book.sold,
-            vendidosWeb: response.book.sold,
-            consignadosVendidos: response.book.consignadosVendidos || 0,
-            consignadosNoVendidos: response.book.consignadosNoVendidos || 0,
-            promocionales: response.book.promocionales || 0,
-            regalados: response.book.regalados || 0,
-            ubicacionActual: response.book.ubicacionActual || "Bodega principal"
-          };
+        try {
+          response = await api.updateBook(currentBook.id, bookData);
+          console.log('Respuesta de actualización del libro:', response);
           
-          setBooks(books.map(book => 
-            book.id === currentBook.id ? updatedBook : book
-          ));
+          if (response && response.book) {
+            // Actualizar el estado local con el libro actualizado
+            const updatedBook = {
+              id: response.book.id,
+              titulo: response.book.title,
+              autor: response.book.author,
+              isbn: response.book.isbn,
+              portada: response.book.portada || "/default-book-cover.png",
+              sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
+              impresionTotal: (parseInt(response.book.stock) || 0) + (parseInt(response.book.sold) || 0),
+              vendidosWeb: parseInt(response.book.sold) || 0,
+              consignadosVendidos: parseInt(response.book.consignadosVendidos) || 0,
+              consignadosNoVendidos: parseInt(response.book.consignadosNoVendidos) || 0,
+              promocionales: parseInt(response.book.promocionales) || 0,
+              regalados: parseInt(response.book.regalados) || 0,
+              ubicacionActual: response.book.ubicacionActual || "Bodega principal"
+            };
+            
+            setBooks(books.map(book => 
+              book.id === currentBook.id ? updatedBook : book
+            ));
+            
+            alert("Libro actualizado correctamente");
+            // Cerrar el formulario
+            setShowForm(false);
+          } else {
+            throw new Error("La respuesta de la API no contiene los datos esperados");
+          }
+        } catch (updateError) {
+          console.error("Error específico al actualizar el libro:", updateError);
+          alert("No se pudo actualizar el libro. Por favor, intenta de nuevo más tarde.");
+          return;
         }
       } else {
         // Añadir nuevo libro
         response = await api.createBook(bookData);
+        console.log('Respuesta de creación del libro:', response);
+        
         if (response && response.book) {
           // Añadir el nuevo libro al estado local
           const newBook = {
@@ -198,21 +221,23 @@ export const Stock = () => {
             isbn: response.book.isbn,
             portada: response.book.portada || "/default-book-cover.png",
             sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
-            impresionTotal: response.book.stock + response.book.sold,
-            vendidosWeb: response.book.sold,
-            consignadosVendidos: response.book.consignadosVendidos || 0,
-            consignadosNoVendidos: response.book.consignadosNoVendidos || 0,
-            promocionales: response.book.promocionales || 0,
-            regalados: response.book.regalados || 0,
+            impresionTotal: (parseInt(response.book.stock) || 0) + (parseInt(response.book.sold) || 0),
+            vendidosWeb: parseInt(response.book.sold) || 0,
+            consignadosVendidos: parseInt(response.book.consignadosVendidos) || 0,
+            consignadosNoVendidos: parseInt(response.book.consignadosNoVendidos) || 0,
+            promocionales: parseInt(response.book.promocionales) || 0,
+            regalados: parseInt(response.book.regalados) || 0,
             ubicacionActual: response.book.ubicacionActual || "Bodega principal"
           };
           
           setBooks([...books, newBook]);
+          alert("Libro guardado correctamente");
+          // Cerrar el formulario
+          setShowForm(false);
+        } else {
+          throw new Error("La respuesta de la API no contiene los datos esperados");
         }
       }
-      
-      // Cerrar el formulario
-      setShowForm(false);
     } catch (err) {
       console.error("Error al guardar el libro:", err);
       alert("No se pudo guardar el libro. Por favor, intenta de nuevo más tarde.");

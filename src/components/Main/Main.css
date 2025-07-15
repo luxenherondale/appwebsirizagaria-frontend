@@ -158,13 +158,16 @@
 }
 
 .logo-image {
-  height: 200px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: 15vh;
   margin-right: 0.75rem;
 }
 
 @media (max-width: 768px) {
   .logo-image {
-    height: 120px; /* Reducir tamaño del logo en móviles */
+    max-height: 12vh; /* Reducir tamaño del logo en móviles */
   }
   
   .logo {
@@ -176,7 +179,7 @@
 
 @media (max-width: 480px) {
   .logo-image {
-    height: 100px;
+    max-height: 10vh;
   }
   
   .logo {
@@ -187,7 +190,7 @@
 
 @media (max-width: 400px) {
   .logo-image {
-    height: 80px;
+    max-height: 8vh;
   }
   
   .logo {

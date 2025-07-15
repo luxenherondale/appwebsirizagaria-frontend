@@ -39,7 +39,7 @@ export const Stock = () => {
             titulo: book.title,
             autor: book.author,
             isbn: book.isbn,
-            portada: book.portada || "/default-book-cover.svg",
+            portada: book.portada || "/default-book-cover.png",
             sinopsis: book.sinopsis || "Sin sinopsis disponible",
             impresionTotal: book.stock + book.sold,
             vendidosWeb: book.sold,
@@ -171,7 +171,7 @@ export const Stock = () => {
             titulo: response.book.title,
             autor: response.book.author,
             isbn: response.book.isbn,
-            portada: response.book.portada || "/default-book-cover.svg",
+            portada: response.book.portada || "/default-book-cover.png",
             sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
             impresionTotal: response.book.stock + response.book.sold,
             vendidosWeb: response.book.sold,
@@ -196,7 +196,7 @@ export const Stock = () => {
             titulo: response.book.title,
             autor: response.book.author,
             isbn: response.book.isbn,
-            portada: response.book.portada || "/default-book-cover.svg",
+            portada: response.book.portada || "/default-book-cover.png",
             sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
             impresionTotal: response.book.stock + response.book.sold,
             vendidosWeb: response.book.sold,
@@ -299,7 +299,7 @@ export const Stock = () => {
               <tr key={book.id}>
                 <td>
                   <img 
-                    src={book.portada || "/default-book-cover.svg"} 
+                    src={book.portada || "/default-book-cover.png"} 
                     alt={book.titulo}
                     className="book-cover"
                   />

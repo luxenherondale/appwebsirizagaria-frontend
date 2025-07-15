@@ -131,12 +131,18 @@ export const Contabilidad = () => {
       }
 
       // Preparar datos para la API - asegurar que todos los campos tengan el formato correcto
+      // Usar nombres de campo que funcionen tanto con la API real como con la simulada
       const expenseData = {
         concept: transaccionActual.concepto.trim(),
+        concepto: transaccionActual.concepto.trim(), // Duplicar para compatibilidad
         date: transaccionActual.fecha, // Asegurar formato YYYY-MM-DD
+        fecha: transaccionActual.fecha, // Duplicar para compatibilidad
         amount: montoNumerico,
+        monto: montoNumerico, // Duplicar para compatibilidad
         category: (transaccionActual.categoria && transaccionActual.categoria.trim()) || 'Otros',
-        type: (transaccionActual.tipo && transaccionActual.tipo.trim()) || 'gasto'
+        categoria: (transaccionActual.categoria && transaccionActual.categoria.trim()) || 'Otros', // Duplicar para compatibilidad
+        type: (transaccionActual.tipo && transaccionActual.tipo.trim()) || 'gasto',
+        tipo: (transaccionActual.tipo && transaccionActual.tipo.trim()) || 'gasto' // Duplicar para compatibilidad
       };
       
       console.log('Datos preparados para enviar a la API:', expenseData);
@@ -158,17 +164,19 @@ export const Contabilidad = () => {
           console.log('Respuesta completa de actualización:', response);
           
           // Manejar diferentes formatos de respuesta del backend
-          const expenseData = response.expense || response.data || response;
+          const responseData = response.expense || response.data || response;
           
-          if (expenseData && (expenseData.id || expenseData._id)) {
+          if (responseData && (responseData.id || responseData._id)) {
             // Actualizar el estado local con la transacción actualizada con manejo flexible de propiedades
             const updatedExpense = {
-              id: expenseData.id || expenseData._id,
-              fecha: expenseData.date ? expenseData.date.split('T')[0] : new Date().toISOString().split('T')[0],
-              concepto: expenseData.concept || expenseData.concepto || expenseData.name || expenseData.nombre || 'Sin concepto',
-              tipo: expenseData.type || expenseData.tipo || 'gasto',
-              monto: parseFloat(expenseData.amount || expenseData.monto || expenseData.value || 0),
-              categoria: expenseData.category || expenseData.categoria || 'Otros'
+              id: responseData.id || responseData._id,
+              fecha: responseData.date ? responseData.date.split('T')[0] : 
+                     responseData.fecha ? responseData.fecha.split('T')[0] : 
+                     new Date().toISOString().split('T')[0],
+              concepto: responseData.concept || responseData.concepto || responseData.name || responseData.nombre || 'Sin concepto',
+              tipo: responseData.type || responseData.tipo || 'gasto',
+              monto: parseFloat(responseData.amount || responseData.monto || responseData.value || 0),
+              categoria: responseData.category || responseData.categoria || 'Otros'
             };
             
             console.log('Transacción actualizada:', updatedExpense);
@@ -199,17 +207,19 @@ export const Contabilidad = () => {
           console.log('Respuesta completa de creación:', response);
           
           // Manejar diferentes formatos de respuesta del backend
-          const expenseData = response.expense || response.data || response;
+          const responseData = response.expense || response.data || response;
           
-          if (expenseData && (expenseData.id || expenseData._id)) {
+          if (responseData && (responseData.id || responseData._id)) {
             // Añadir la nueva transacción al estado local con manejo flexible de propiedades
             const newExpense = {
-              id: expenseData.id || expenseData._id,
-              fecha: expenseData.date ? expenseData.date.split('T')[0] : new Date().toISOString().split('T')[0],
-              concepto: expenseData.concept || expenseData.concepto || expenseData.name || expenseData.nombre || 'Sin concepto',
-              tipo: expenseData.type || expenseData.tipo || 'gasto',
-              monto: parseFloat(expenseData.amount || expenseData.monto || expenseData.value || 0),
-              categoria: expenseData.category || expenseData.categoria || 'Otros'
+              id: responseData.id || responseData._id,
+              fecha: responseData.date ? responseData.date.split('T')[0] : 
+                     responseData.fecha ? responseData.fecha.split('T')[0] : 
+                     new Date().toISOString().split('T')[0],
+              concepto: responseData.concept || responseData.concepto || responseData.name || responseData.nombre || 'Sin concepto',
+              tipo: responseData.type || responseData.tipo || 'gasto',
+              monto: parseFloat(responseData.amount || responseData.monto || responseData.value || 0),
+              categoria: responseData.category || responseData.categoria || 'Otros'
             };
             
             console.log('Nueva transacción creada:', newExpense);

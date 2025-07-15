@@ -415,52 +415,74 @@ export const mockExpensesApi = {
   },
   
   getExpenseStats: async () => {
-    // Calcular estadísticas de gastos
-    const totalExpenses = mockExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-    
-    // Agrupar por categoría
-    const expensesByCategory = mockExpenses.reduce((acc, expense) => {
-      const category = expense.category || 'otros';
-      if (!acc[category]) {
-        acc[category] = 0;
-      }
-      acc[category] += expense.amount;
-      return acc;
-    }, {});
-    
-    // Calcular porcentajes por categoría
-    const percentagesByCategory = {};
-    Object.keys(expensesByCategory).forEach(category => {
-      percentagesByCategory[category] = (expensesByCategory[category] / totalExpenses) * 100;
-    });
-    
-    // Calcular gastos por mes (últimos 6 meses)
-    const today = new Date();
-    const expensesByMonth = {};
-    
-    for (let i = 0; i < 6; i++) {
-      const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`;
-      expensesByMonth[monthKey] = 0;
-    }
-    
-    mockExpenses.forEach(expense => {
-      const expenseDate = new Date(expense.date);
-      const monthKey = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`;
+    try {
+      // Calcular estadísticas de gastos
+      const totalExpenses = mockExpenses.reduce((sum, expense) => {
+        // Asegurar que amount sea un número
+        const amount = parseFloat(expense.amount) || 0;
+        return sum + amount;
+      }, 0);
       
-      if (expensesByMonth[monthKey] !== undefined) {
-        expensesByMonth[monthKey] += expense.amount;
+      // Agrupar por categoría
+      const expensesByCategory = mockExpenses.reduce((acc, expense) => {
+        const category = expense.category || expense.categoria || 'Otros';
+        if (!acc[category]) {
+          acc[category] = 0;
+        }
+        // Asegurar que amount sea un número
+        const amount = parseFloat(expense.amount) || parseFloat(expense.monto) || 0;
+        acc[category] += amount;
+        return acc;
+      }, {});
+      
+      // Calcular porcentajes por categoría
+      const percentagesByCategory = {};
+      Object.keys(expensesByCategory).forEach(category => {
+        percentagesByCategory[category] = totalExpenses > 0 ? 
+          (expensesByCategory[category] / totalExpenses) * 100 : 0;
+      });
+      
+      // Calcular gastos por mes (últimos 6 meses)
+      const today = new Date();
+      const expensesByMonth = {};
+      
+      // Inicializar el objeto expensesByMonth antes del bucle
+      for (let i = 0; i < 6; i++) {
+        const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`;
+        expensesByMonth[monthKey] = 0;
       }
-    });
-    
-    return mockResponse({
-      stats: {
-        total: totalExpenses,
-        byCategory: expensesByCategory,
-        percentagesByCategory,
-        byMonth: expensesByMonth
-      }
-    });
+      
+      // Ahora procesar cada gasto
+      mockExpenses.forEach(expense => {
+        try {
+          const expenseDate = new Date(expense.date || expense.fecha);
+          if (!isNaN(expenseDate.getTime())) { // Verificar que la fecha sea válida
+            const monthKey = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`;
+            
+            if (expensesByMonth[monthKey] !== undefined) {
+              // Asegurar que amount sea un número
+              const amount = parseFloat(expense.amount) || parseFloat(expense.monto) || 0;
+              expensesByMonth[monthKey] += amount;
+            }
+          }
+        } catch (dateError) {
+          console.error('Error al procesar fecha del gasto:', dateError);
+        }
+      });
+      
+      return mockResponse({
+        stats: {
+          total: totalExpenses,
+          byCategory: expensesByCategory,
+          percentagesByCategory,
+          byMonth: expensesByMonth
+        }
+      });
+    } catch (error) {
+      console.error('Error en getExpenseStats:', error);
+      return mockResponse(null, true, 'Error al calcular estadísticas de gastos');
+    }
   },
   
   getExpenseById: async (id) => {
@@ -474,39 +496,90 @@ export const mockExpensesApi = {
   },
   
   createExpense: async (expenseData) => {
-    // Crear nuevo gasto
-    const newExpense = {
-      id: `${mockExpenses.length + 1}`,
-      ...expenseData,
-      createdAt: new Date().toISOString()
-    };
-    
-    mockExpenses.push(newExpense);
-    
-    // Guardar gastos actualizados en localStorage
-    saveData('mockExpenses', mockExpenses);
-    
-    return mockResponse({ expense: newExpense });
+    try {
+      console.log('Creando nuevo gasto con datos:', expenseData);
+      
+      // Normalizar los datos para asegurar consistencia
+      const normalizedData = {
+        concept: expenseData.concept || expenseData.concepto || '',
+        date: expenseData.date || expenseData.fecha || new Date().toISOString(),
+        amount: parseFloat(expenseData.amount) || parseFloat(expenseData.monto) || 0,
+        category: expenseData.category || expenseData.categoria || 'Otros',
+        type: expenseData.type || expenseData.tipo || 'gasto'
+      };
+      
+      // Crear nuevo gasto
+      const newExpense = {
+        id: `${mockExpenses.length + 1}`,
+        ...normalizedData,
+        createdAt: new Date().toISOString()
+      };
+      
+      console.log('Nuevo gasto normalizado:', newExpense);
+      
+      mockExpenses.push(newExpense);
+      
+      // Guardar gastos actualizados en localStorage
+      saveData('mockExpenses', mockExpenses);
+      
+      return mockResponse({ expense: newExpense });
+    } catch (error) {
+      console.error('Error al crear gasto:', error);
+      return mockResponse(null, true, 'Error al crear la transacción');
+    }
   },
   
   updateExpense: async (id, expenseData) => {
-    const index = mockExpenses.findIndex(e => e.id === id);
-    
-    if (index === -1) {
-      return mockResponse(null, true, 'Gasto no encontrado');
+    try {
+      console.log('Actualizando gasto con ID:', id, 'Datos:', expenseData);
+      
+      const index = mockExpenses.findIndex(e => e.id === id);
+      
+      if (index === -1) {
+        console.error('Gasto no encontrado con ID:', id);
+        return mockResponse(null, true, 'Gasto no encontrado');
+      }
+      
+      // Normalizar los datos para asegurar consistencia
+      const normalizedData = {};
+      
+      if (expenseData.concept || expenseData.concepto) {
+        normalizedData.concept = expenseData.concept || expenseData.concepto;
+      }
+      
+      if (expenseData.date || expenseData.fecha) {
+        normalizedData.date = expenseData.date || expenseData.fecha;
+      }
+      
+      if (expenseData.amount !== undefined || expenseData.monto !== undefined) {
+        normalizedData.amount = parseFloat(expenseData.amount) || parseFloat(expenseData.monto) || 0;
+      }
+      
+      if (expenseData.category || expenseData.categoria) {
+        normalizedData.category = expenseData.category || expenseData.categoria;
+      }
+      
+      if (expenseData.type || expenseData.tipo) {
+        normalizedData.type = expenseData.type || expenseData.tipo;
+      }
+      
+      // Actualizar gasto
+      mockExpenses[index] = {
+        ...mockExpenses[index],
+        ...normalizedData,
+        id // Asegurar que el ID no cambie
+      };
+      
+      console.log('Gasto actualizado:', mockExpenses[index]);
+      
+      // Guardar gastos actualizados en localStorage
+      saveData('mockExpenses', mockExpenses);
+      
+      return mockResponse({ expense: mockExpenses[index] });
+    } catch (error) {
+      console.error('Error al actualizar gasto:', error);
+      return mockResponse(null, true, 'Error al actualizar la transacción');
     }
-    
-    // Actualizar gasto
-    mockExpenses[index] = {
-      ...mockExpenses[index],
-      ...expenseData,
-      id // Asegurar que el ID no cambie
-    };
-    
-    // Guardar gastos actualizados en localStorage
-    saveData('mockExpenses', mockExpenses);
-    
-    return mockResponse({ expense: mockExpenses[index] });
   },
   
   deleteExpense: async (id) => {

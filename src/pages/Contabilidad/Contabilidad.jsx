@@ -157,15 +157,18 @@ export const Contabilidad = () => {
           response = await api.updateExpense(expenseId, expenseData);
           console.log('Respuesta completa de actualización:', response);
           
-          if (response && response.expense) {
-            // Actualizar el estado local con la transacción actualizada
+          // Manejar diferentes formatos de respuesta del backend
+          const expenseData = response.expense || response.data || response;
+          
+          if (expenseData && (expenseData.id || expenseData._id)) {
+            // Actualizar el estado local con la transacción actualizada con manejo flexible de propiedades
             const updatedExpense = {
-              id: response.expense.id,
-              fecha: response.expense.date ? response.expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
-              concepto: response.expense.concept || response.expense.concepto,
-              tipo: response.expense.type || response.expense.tipo || 'gasto',
-              monto: parseFloat(response.expense.amount || response.expense.monto || 0),
-              categoria: response.expense.category || response.expense.categoria || 'Otros'
+              id: expenseData.id || expenseData._id,
+              fecha: expenseData.date ? expenseData.date.split('T')[0] : new Date().toISOString().split('T')[0],
+              concepto: expenseData.concept || expenseData.concepto || expenseData.name || expenseData.nombre || 'Sin concepto',
+              tipo: expenseData.type || expenseData.tipo || 'gasto',
+              monto: parseFloat(expenseData.amount || expenseData.monto || expenseData.value || 0),
+              categoria: expenseData.category || expenseData.categoria || 'Otros'
             };
             
             console.log('Transacción actualizada:', updatedExpense);
@@ -179,8 +182,8 @@ export const Contabilidad = () => {
             setModalAbierto(false);
             setTransaccionActual(null); // Limpiar la transacción actual
           } else {
-            console.error("Respuesta de API incompleta:", response);
-            throw new Error("La respuesta de la API no contiene los datos esperados");
+            console.error("Respuesta de API incompleta o en formato inesperado:", response);
+            throw new Error("La respuesta de la API no contiene los datos esperados o tiene un formato diferente");
           }
         } catch (updateError) {
           console.error("Error específico al actualizar la transacción:", updateError);
@@ -195,15 +198,18 @@ export const Contabilidad = () => {
           response = await api.createExpense(expenseData);
           console.log('Respuesta completa de creación:', response);
           
-          if (response && response.expense) {
-            // Añadir la nueva transacción al estado local
+          // Manejar diferentes formatos de respuesta del backend
+          const expenseData = response.expense || response.data || response;
+          
+          if (expenseData && (expenseData.id || expenseData._id)) {
+            // Añadir la nueva transacción al estado local con manejo flexible de propiedades
             const newExpense = {
-              id: response.expense.id,
-              fecha: response.expense.date ? response.expense.date.split('T')[0] : new Date().toISOString().split('T')[0],
-              concepto: response.expense.concept || response.expense.concepto,
-              tipo: response.expense.type || response.expense.tipo || 'gasto',
-              monto: parseFloat(response.expense.amount || response.expense.monto || 0),
-              categoria: response.expense.category || response.expense.categoria || 'Otros'
+              id: expenseData.id || expenseData._id,
+              fecha: expenseData.date ? expenseData.date.split('T')[0] : new Date().toISOString().split('T')[0],
+              concepto: expenseData.concept || expenseData.concepto || expenseData.name || expenseData.nombre || 'Sin concepto',
+              tipo: expenseData.type || expenseData.tipo || 'gasto',
+              monto: parseFloat(expenseData.amount || expenseData.monto || expenseData.value || 0),
+              categoria: expenseData.category || expenseData.categoria || 'Otros'
             };
             
             console.log('Nueva transacción creada:', newExpense);
@@ -215,8 +221,8 @@ export const Contabilidad = () => {
             setModalAbierto(false);
             setTransaccionActual(null); // Limpiar la transacción actual
           } else {
-            console.error("Respuesta de API incompleta:", response);
-            throw new Error("La respuesta de la API no contiene los datos esperados");
+            console.error("Respuesta de API incompleta o en formato inesperado:", response);
+            throw new Error("La respuesta de la API no contiene los datos esperados o tiene un formato diferente");
           }
         } catch (createError) {
           console.error("Error específico al crear la transacción:", createError);

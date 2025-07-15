@@ -121,12 +121,28 @@ export const Stock = () => {
 
   // Función para eliminar un libro
   const handleDeleteBook = async (id) => {
+    // Validar que el ID sea válido
+    if (!id) {
+      console.error("Error: Intento de eliminar un libro con ID undefined o nulo");
+      alert("No se puede eliminar el libro porque no tiene un ID válido.");
+      return;
+    }
+    
+    console.log('Intentando eliminar libro con ID:', id);
+    
     if (window.confirm("¿Estás seguro de que deseas eliminar este libro?")) {
       try {
-        await api.deleteBook(id);
-        setBooks(books.filter(book => book.id !== id));
+        // Llamar a la API para eliminar el libro
+        const response = await api.deleteBook(id);
+        console.log('Respuesta de eliminación:', response);
+        
+        // Actualizar el estado local eliminando el libro
+        setBooks(prevBooks => prevBooks.filter(book => book.id !== id));
+        
+        alert("Libro eliminado correctamente");
       } catch (err) {
         console.error("Error al eliminar el libro:", err);
+        console.error("Detalles adicionales:", err.message);
         alert("No se pudo eliminar el libro. Por favor, intenta de nuevo más tarde.");
       }
     }
@@ -194,28 +210,32 @@ export const Stock = () => {
         }
         
         console.log('Actualizando libro con ID:', bookId);
+        console.log('Datos enviados para actualizar:', bookData);
         
         try {
           // Actualizar libro existente
           response = await api.updateBook(bookId, bookData);
           console.log('Respuesta completa de actualización del libro:', response);
           
-          if (response && response.book) {
-            // Actualizar el estado local con el libro actualizado
+          // Manejar diferentes formatos de respuesta del backend
+          const bookResponse = response.book || response.data || response;
+          
+          if (bookResponse && (bookResponse.id || bookResponse._id)) {
+            // Actualizar el estado local con el libro actualizado con manejo flexible de propiedades
             const updatedBook = {
-              id: response.book.id,
-              titulo: response.book.title,
-              autor: response.book.author,
-              isbn: response.book.isbn,
-              portada: response.book.portada || "/default-book-cover.png",
-              sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
-              impresionTotal: (parseInt(response.book.stock) || 0) + (parseInt(response.book.sold) || 0),
-              vendidosWeb: parseInt(response.book.sold) || 0,
-              consignadosVendidos: parseInt(response.book.consignadosVendidos) || 0,
-              consignadosNoVendidos: parseInt(response.book.consignadosNoVendidos) || 0,
-              promocionales: parseInt(response.book.promocionales) || 0,
-              regalados: parseInt(response.book.regalados) || 0,
-              ubicacionActual: response.book.ubicacionActual || "Bodega principal"
+              id: bookResponse.id || bookResponse._id || bookId, // Mantener el ID original si no viene en la respuesta
+              titulo: bookResponse.title || bookResponse.titulo || bookData.title,
+              autor: bookResponse.author || bookResponse.autor || bookData.author,
+              isbn: bookResponse.isbn || bookData.isbn,
+              portada: bookResponse.portada || bookResponse.cover || "/default-book-cover.png",
+              sinopsis: bookResponse.sinopsis || bookResponse.synopsis || "Sin sinopsis disponible",
+              impresionTotal: (parseInt(bookResponse.stock) || 0) + (parseInt(bookResponse.sold) || 0),
+              vendidosWeb: parseInt(bookResponse.sold) || parseInt(bookResponse.vendidos) || 0,
+              consignadosVendidos: parseInt(bookResponse.consignadosVendidos) || 0,
+              consignadosNoVendidos: parseInt(bookResponse.consignadosNoVendidos) || 0,
+              promocionales: parseInt(bookResponse.promocionales) || 0,
+              regalados: parseInt(bookResponse.regalados) || 0,
+              ubicacionActual: bookResponse.ubicacionActual || bookResponse.location || "Bodega principal"
             };
             
             console.log('Libro actualizado:', updatedBook);
@@ -231,8 +251,8 @@ export const Stock = () => {
             // Limpiar el libro actual
             setCurrentBook(null);
           } else {
-            console.error("Respuesta de API incompleta:", response);
-            throw new Error("La respuesta de la API no contiene los datos esperados");
+            console.error("Respuesta de API incompleta o en formato inesperado:", response);
+            throw new Error("La respuesta de la API no contiene los datos esperados o tiene un formato diferente");
           }
         } catch (updateError) {
           console.error("Error específico al actualizar el libro:", updateError);
@@ -247,22 +267,25 @@ export const Stock = () => {
           response = await api.createBook(bookData);
           console.log('Respuesta completa de creación del libro:', response);
           
-          if (response && response.book) {
-            // Añadir el nuevo libro al estado local
+          // Manejar diferentes formatos de respuesta del backend
+          const bookResponse = response.book || response.data || response;
+          
+          if (bookResponse && (bookResponse.id || bookResponse._id)) {
+            // Añadir el nuevo libro al estado local con manejo flexible de propiedades
             const newBook = {
-              id: response.book.id,
-              titulo: response.book.title,
-              autor: response.book.author,
-              isbn: response.book.isbn,
-              portada: response.book.portada || "/default-book-cover.png",
-              sinopsis: response.book.sinopsis || "Sin sinopsis disponible",
-              impresionTotal: (parseInt(response.book.stock) || 0) + (parseInt(response.book.sold) || 0),
-              vendidosWeb: parseInt(response.book.sold) || 0,
-              consignadosVendidos: parseInt(response.book.consignadosVendidos) || 0,
-              consignadosNoVendidos: parseInt(response.book.consignadosNoVendidos) || 0,
-              promocionales: parseInt(response.book.promocionales) || 0,
-              regalados: parseInt(response.book.regalados) || 0,
-              ubicacionActual: response.book.ubicacionActual || "Bodega principal"
+              id: bookResponse.id || bookResponse._id,
+              titulo: bookResponse.title || bookResponse.titulo || bookData.title,
+              autor: bookResponse.author || bookResponse.autor || bookData.author,
+              isbn: bookResponse.isbn || bookData.isbn,
+              portada: bookResponse.portada || bookResponse.cover || "/default-book-cover.png",
+              sinopsis: bookResponse.sinopsis || bookResponse.synopsis || "Sin sinopsis disponible",
+              impresionTotal: (parseInt(bookResponse.stock) || 0) + (parseInt(bookResponse.sold) || 0),
+              vendidosWeb: parseInt(bookResponse.sold) || parseInt(bookResponse.vendidos) || 0,
+              consignadosVendidos: parseInt(bookResponse.consignadosVendidos) || 0,
+              consignadosNoVendidos: parseInt(bookResponse.consignadosNoVendidos) || 0,
+              promocionales: parseInt(bookResponse.promocionales) || 0,
+              regalados: parseInt(bookResponse.regalados) || 0,
+              ubicacionActual: bookResponse.ubicacionActual || bookResponse.location || "Bodega principal"
             };
             
             console.log('Nuevo libro creado:', newBook);
@@ -274,8 +297,8 @@ export const Stock = () => {
             // Cerrar el formulario
             setShowForm(false);
           } else {
-            console.error("Respuesta de API incompleta:", response);
-            throw new Error("La respuesta de la API no contiene los datos esperados");
+            console.error("Respuesta de API incompleta o en formato inesperado:", response);
+            throw new Error("La respuesta de la API no contiene los datos esperados o tiene un formato diferente");
           }
         } catch (createError) {
           console.error("Error específico al crear el libro:", createError);

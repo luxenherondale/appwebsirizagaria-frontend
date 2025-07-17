@@ -127,22 +127,22 @@ const mockResponse = async (data, shouldFail = false, errorMessage = 'Error simu
 // Simulación de endpoints de autenticación
 export const mockAuthApi = {
   login: async (email, password) => {
-    console.log(`Intentando login con: ${email}, ${password}`);
+    // Verificación de credenciales
     
     // Verificar credenciales
     const user = mockUsers.find(u => u.email === email);
     
     if (!user) {
-      console.log('Usuario no encontrado');
+
       return mockResponse(null, true, 'Credenciales inválidas');
     }
     
     if (user.password !== password) {
-      console.log(`Contraseña incorrecta. Esperada: ${user.password}, Recibida: ${password}`);
+
       return mockResponse(null, true, 'Credenciales inválidas');
     }
     
-    console.log('Login exitoso');
+
     
     // Generar un token simulado
     const token = `mock-token-${Date.now()}`;
@@ -161,11 +161,11 @@ export const mockAuthApi = {
   },
   
   register: async (userData) => {
-    console.log('Registrando usuario:', userData);
+
     
     // Verificar si el email ya existe
     if (mockUsers.some(u => u.email === userData.email)) {
-      console.log('Email ya registrado');
+
       return mockResponse(null, true, 'El correo electrónico ya está registrado');
     }
     
@@ -177,7 +177,7 @@ export const mockAuthApi = {
       createdAt: new Date().toISOString()
     };
     
-    console.log('Nuevo usuario creado:', newUser);
+
     mockUsers.push(newUser);
     
     // Guardar usuarios actualizados en localStorage
@@ -220,11 +220,11 @@ export const mockAuthApi = {
       const user = mockUsers.find(u => u.id === userFromStorage.id || u.email === userFromStorage.email);
       
       if (!user) {
-        console.log('Usuario no encontrado en mockUsers:', userFromStorage);
+
         return mockResponse(null, true, 'Usuario no encontrado');
       }
       
-      console.log('Usuario autenticado:', userFromStorage);
+
       return mockResponse({ user: userFromStorage });
     } catch (error) {
       console.error('Error al recuperar el usuario:', error);
@@ -497,7 +497,7 @@ export const mockExpensesApi = {
   
   createExpense: async (expenseData) => {
     try {
-      console.log('Creando nuevo gasto con datos:', expenseData);
+
       
       // Normalizar los datos para asegurar consistencia
       const normalizedData = {
@@ -515,7 +515,7 @@ export const mockExpensesApi = {
         createdAt: new Date().toISOString()
       };
       
-      console.log('Nuevo gasto normalizado:', newExpense);
+
       
       mockExpenses.push(newExpense);
       
@@ -531,7 +531,7 @@ export const mockExpensesApi = {
   
   updateExpense: async (id, expenseData) => {
     try {
-      console.log('Actualizando gasto con ID:', id, 'Datos:', expenseData);
+
       
       const index = mockExpenses.findIndex(e => e.id === id);
       
@@ -570,7 +570,7 @@ export const mockExpensesApi = {
         id // Asegurar que el ID no cambie
       };
       
-      console.log('Gasto actualizado:', mockExpenses[index]);
+
       
       // Guardar gastos actualizados en localStorage
       saveData('mockExpenses', mockExpenses);

@@ -21,7 +21,7 @@ export const Inicio = () => {
         
         // Cargar datos de libros
         const booksResponse = await api.getBooks();
-        console.log('Datos de libros cargados:', booksResponse);
+
         
         if (booksResponse && booksResponse.books) {
           // Transformar los datos al formato esperado por el dashboard
@@ -44,7 +44,7 @@ export const Inicio = () => {
         
         // Cargar datos de gastos/ingresos
         const expensesResponse = await api.getExpenses();
-        console.log('Datos de contabilidad cargados:', expensesResponse);
+
         
         if (expensesResponse && expensesResponse.expenses) {
           // Transformar los datos al formato esperado por el dashboard

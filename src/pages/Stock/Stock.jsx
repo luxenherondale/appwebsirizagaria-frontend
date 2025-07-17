@@ -51,7 +51,7 @@ export const Stock = () => {
           })));
         }
       } catch (err) {
-        console.error("Error al cargar libros:", err);
+        setError("No se pudieron cargar los libros. Por favor, intenta de nuevo más tarde.");
         setError("No se pudieron cargar los libros. Por favor, intenta de nuevo más tarde.");
       } finally {
         setLoading(false);
@@ -94,7 +94,7 @@ export const Stock = () => {
 
   // Función para abrir el formulario para editar un libro existente
   const handleEditBook = (book) => {
-    console.log('Editando libro con ID:', book.id);
+    // Preparar formulario para edición
     // Guardar el libro completo incluyendo su ID
     setCurrentBook({
       id: book.id, // Asegurar que el ID esté explícitamente establecido
@@ -123,26 +123,25 @@ export const Stock = () => {
   const handleDeleteBook = async (id) => {
     // Validar que el ID sea válido
     if (!id) {
-      console.error("Error: Intento de eliminar un libro con ID undefined o nulo");
+      alert("No se puede eliminar el libro porque no tiene un ID válido.");
       alert("No se puede eliminar el libro porque no tiene un ID válido.");
       return;
     }
     
-    console.log('Intentando eliminar libro con ID:', id);
+
     
     if (window.confirm("¿Estás seguro de que deseas eliminar este libro?")) {
       try {
         // Llamar a la API para eliminar el libro
         const response = await api.deleteBook(id);
-        console.log('Respuesta de eliminación:', response);
+
         
         // Actualizar el estado local eliminando el libro
         setBooks(prevBooks => prevBooks.filter(book => book.id !== id));
         
         alert("Libro eliminado correctamente");
       } catch (err) {
-        console.error("Error al eliminar el libro:", err);
-        console.error("Detalles adicionales:", err.message);
+        alert("No se pudo eliminar el libro. Por favor, intenta de nuevo más tarde.");
         alert("No se pudo eliminar el libro. Por favor, intenta de nuevo más tarde.");
       }
     }
@@ -198,7 +197,7 @@ export const Stock = () => {
         ubicacionActual: (formData.ubicacionActual && formData.ubicacionActual.trim()) || "Bodega principal"
       };
       
-      console.log('Datos preparados para enviar a la API:', bookData);
+
       
       let response;
       
@@ -209,13 +208,12 @@ export const Stock = () => {
           throw new Error("ID de libro no válido");
         }
         
-        console.log('Actualizando libro con ID:', bookId);
-        console.log('Datos enviados para actualizar:', bookData);
+
         
         try {
           // Actualizar libro existente
           response = await api.updateBook(bookId, bookData);
-          console.log('Respuesta completa de actualización del libro:', response);
+
           
           // Manejar diferentes formatos de respuesta del backend
           const bookResponse = response.book || response.data || response;
@@ -238,7 +236,7 @@ export const Stock = () => {
               ubicacionActual: bookResponse.ubicacionActual || bookResponse.location || "Bodega principal"
             };
             
-            console.log('Libro actualizado:', updatedBook);
+
             
             // Actualizar el estado local con el libro actualizado
             setBooks(prevBooks => 
@@ -255,17 +253,16 @@ export const Stock = () => {
             throw new Error("La respuesta de la API no contiene los datos esperados o tiene un formato diferente");
           }
         } catch (updateError) {
-          console.error("Error específico al actualizar el libro:", updateError);
-          console.error("Detalles adicionales:", updateError.message);
+
           alert("No se pudo actualizar el libro. Por favor, intenta de nuevo más tarde.");
         }
       } else {
         // Añadir nuevo libro
-        console.log('Creando nuevo libro con datos:', bookData);
+
         
         try {
           response = await api.createBook(bookData);
-          console.log('Respuesta completa de creación del libro:', response);
+
           
           // Manejar diferentes formatos de respuesta del backend
           const bookResponse = response.book || response.data || response;
@@ -288,7 +285,7 @@ export const Stock = () => {
               ubicacionActual: bookResponse.ubicacionActual || bookResponse.location || "Bodega principal"
             };
             
-            console.log('Nuevo libro creado:', newBook);
+
             
             // Actualizar el estado local con el nuevo libro
             setBooks(prevBooks => [...prevBooks, newBook]);
@@ -301,14 +298,12 @@ export const Stock = () => {
             throw new Error("La respuesta de la API no contiene los datos esperados o tiene un formato diferente");
           }
         } catch (createError) {
-          console.error("Error específico al crear el libro:", createError);
-          console.error("Detalles adicionales:", createError.message);
+
           alert("No se pudo crear el libro. Por favor, intenta de nuevo más tarde.");
         }
       }
     } catch (err) {
-      console.error("Error general al guardar el libro:", err);
-      console.error("Detalles adicionales:", err.message);
+
       alert("No se pudo guardar el libro. Por favor, intenta de nuevo más tarde.");
     }
   };

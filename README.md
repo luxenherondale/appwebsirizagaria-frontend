@@ -2,6 +2,16 @@
 
 Este proyecto es la interfaz web para la gestión y control de stock, ventas, contabilidad y operaciones de la Editorial Siriza Agaria. Está desarrollado en React utilizando Vite para optimizar el flujo de trabajo y la velocidad de desarrollo.
 
+## Enlaces de Despliegue
+
+- **Frontend:** [https://appsirizagaria.mooo.com/](https://appsirizagaria.mooo.com/)
+- **API Backend:** [https://api.appsirizagaria.mooo.com/](https://api.appsirizagaria.mooo.com/)
+
+## Repositorios
+
+- **Frontend:** Este repositorio
+- **Backend:** [https://github.com/luxenherondale/appwebsirizagaria-backend](https://github.com/luxenherondale/appwebsirizagaria-backend)
+
 ---
 
 ## **Características**
@@ -19,16 +29,17 @@ Este proyecto es la interfaz web para la gestión y control de stock, ventas, co
 
 ## **Tecnologías**
 
-- [React](https://react.dev/)
+- [React]
 - [Vite]
 - [React Router]
-- [normalize.css](
+- [normalize.css]
 - Arquitectura por componentes y CSS modular
-- ***
+
+---
 
 ## **Estructura de carpetas**
 
-``
+```
 src/
 │
 ├── assets/ # Recursos estáticos como imágenes, iconos, etc.
@@ -59,25 +70,54 @@ src/
 │ └── userService.js # Servicio para gestión de usuarios
 │
 ├── utils/ # Funciones utilitarias y helpers
+│ ├── MainApi.js # Centralización de llamadas a la API
+│ └── mockApi.js # API simulada para desarrollo
 │
 └── vendor/ # Recursos externos como fuentes y normalize.css
-
 ```
 
---
+## **Instalación y Ejecución**
 
-# React + Vite
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/tu-usuario/appwebsirizagaria-frontend.git
+   cd appwebsirizagaria-frontend
+   ```
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
 
-Currently, two official plugins are available:
+3. Ejecutar en modo desarrollo:
+   ```bash
+   npm run dev
+   ```
+   La aplicación estará disponible en [http://localhost:3000](http://localhost:3000)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+4. Compilar para producción:
+   ```bash
+   npm run build
+   ```
 
-## Expanding the ESLint configuration
+## **Configuración**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-.......
+La aplicación puede funcionar con una API real o con una API simulada para desarrollo:
+
+- Para usar la API real: Asegúrate de que `USE_MOCK_API = false` en `src/utils/MainApi.js`
+- Para desarrollo sin backend: Configura `USE_MOCK_API = true` para usar datos simulados
+
+## **Despliegue**
+
+La aplicación está desplegada en:
+- Frontend: [https://appsirizagaria.mooo.com/](https://appsirizagaria.mooo.com/)
+- API Backend: [https://api.appsirizagaria.mooo.com/](https://api.appsirizagaria.mooo.com/)
+
+Para desplegar una nueva versión:
+
+1. Asegúrate de que no haya `console.log` en el código de producción
+2. Verifica que `USE_MOCK_API = false` para usar la API real
+3. Ejecuta `npm run build`
+4. Sube los archivos de la carpeta `dist` a tu servidor web
 
 ```

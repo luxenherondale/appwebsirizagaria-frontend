@@ -39,7 +39,7 @@ export const Contabilidad = () => {
           })));
         }
       } catch (err) {
-        console.error("Error al cargar gastos:", err);
+
         setError("No se pudieron cargar los datos de contabilidad. Por favor, intenta de nuevo más tarde.");
       } finally {
         setLoading(false);
@@ -93,7 +93,7 @@ export const Contabilidad = () => {
 
   // Abrir modal para editar
   const abrirModalEditar = (transaccion) => {
-    console.log('Editando transacción con ID:', transaccion.id);
+    // Preparar formulario para edición
     // Asegurar que el ID esté explícitamente establecido
     setTransaccionActual({
       id: transaccion.id, // Asegurar que el ID esté explícitamente establecido
@@ -145,7 +145,7 @@ export const Contabilidad = () => {
         tipo: (transaccionActual.tipo && transaccionActual.tipo.trim()) || 'gasto' // Duplicar para compatibilidad
       };
       
-      console.log('Datos preparados para enviar a la API:', expenseData);
+
       
       let response;
       
@@ -156,12 +156,12 @@ export const Contabilidad = () => {
           throw new Error("ID de transacción no válido");
         }
         
-        console.log('Actualizando transacción con ID:', expenseId);
+
         
         try {
           // Actualizar existente
           response = await api.updateExpense(expenseId, expenseData);
-          console.log('Respuesta completa de actualización:', response);
+
           
           // Manejar diferentes formatos de respuesta del backend
           const responseData = response.expense || response.data || response;
@@ -179,7 +179,7 @@ export const Contabilidad = () => {
               categoria: responseData.category || responseData.categoria || 'Otros'
             };
             
-            console.log('Transacción actualizada:', updatedExpense);
+
             
             // Actualizar el estado local con la transacción actualizada
             setTransacciones(prevTransacciones => 
@@ -194,17 +194,16 @@ export const Contabilidad = () => {
             throw new Error("La respuesta de la API no contiene los datos esperados o tiene un formato diferente");
           }
         } catch (updateError) {
-          console.error("Error específico al actualizar la transacción:", updateError);
-          console.error("Detalles adicionales:", updateError.message);
+
           alert("No se pudo actualizar la transacción. Por favor, intenta de nuevo más tarde.");
         }
       } else {
         // Crear nueva transacción
-        console.log('Creando nueva transacción con datos:', expenseData);
+
         
         try {
           response = await api.createExpense(expenseData);
-          console.log('Respuesta completa de creación:', response);
+
           
           // Manejar diferentes formatos de respuesta del backend
           const responseData = response.expense || response.data || response;
@@ -222,7 +221,7 @@ export const Contabilidad = () => {
               categoria: responseData.category || responseData.categoria || 'Otros'
             };
             
-            console.log('Nueva transacción creada:', newExpense);
+
             
             // Actualizar el estado local con la nueva transacción
             setTransacciones(prevTransacciones => [...prevTransacciones, newExpense]);
@@ -235,14 +234,12 @@ export const Contabilidad = () => {
             throw new Error("La respuesta de la API no contiene los datos esperados o tiene un formato diferente");
           }
         } catch (createError) {
-          console.error("Error específico al crear la transacción:", createError);
-          console.error("Detalles adicionales:", createError.message);
+
           alert("No se pudo crear la transacción. Por favor, intenta de nuevo más tarde.");
         }
       }
     } catch (err) {
-      console.error("Error general al guardar la transacción:", err);
-      console.error("Detalles adicionales:", err.message);
+
       alert("No se pudo guardar la transacción. Por favor, intenta de nuevo más tarde.");
     }
   };
@@ -254,7 +251,7 @@ export const Contabilidad = () => {
         await api.deleteExpense(id);
         setTransacciones(transacciones.filter(t => t.id !== id));
       } catch (err) {
-        console.error("Error al eliminar la transacción:", err);
+
         alert("No se pudo eliminar la transacción. Por favor, intenta de nuevo más tarde.");
       }
     }

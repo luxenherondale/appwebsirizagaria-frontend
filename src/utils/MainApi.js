@@ -8,7 +8,7 @@ import mockApi from './mockApi';
 
 // Constante para determinar si se debe usar la API simulada
 // En un entorno real, esto podría venir de una variable de entorno
-const USE_MOCK_API = false; // Configurado para usar la API real en producción
+const USE_MOCK_API = true; // Usando API simulada mientras se resuelven problemas con el backend real
 
 class MainApi {
   constructor(baseUrl = API_URL) {

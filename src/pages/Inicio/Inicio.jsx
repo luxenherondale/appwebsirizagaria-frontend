@@ -46,7 +46,8 @@ export const Inicio = () => {
         const expensesResponse = await api.getExpenses();
 
         
-        if (expensesResponse && expensesResponse.expenses) {
+        // Verificar si hay datos de gastos disponibles
+        if (expensesResponse && Array.isArray(expensesResponse.expenses)) {
           // Transformar los datos al formato esperado por el dashboard
           const formattedExpenses = expensesResponse.expenses.map(expense => ({
             id: expense.id,

@@ -356,9 +356,12 @@ export const mockBooksApi = {
   },
   
   createBook: async (bookData) => {
+    // Generar un ID único basado en timestamp
+    const newId = Date.now().toString();
+    
     // Crear nuevo libro
     const newBook = {
-      id: `${mockBooks.length + 1}`,
+      id: newId,
       ...bookData,
       createdAt: new Date().toISOString()
     };
@@ -508,9 +511,12 @@ export const mockExpensesApi = {
         type: expenseData.type || expenseData.tipo || 'gasto'
       };
       
+      // Generar un ID único basado en timestamp
+      const newId = Date.now().toString();
+      
       // Crear nuevo gasto
       const newExpense = {
-        id: `${mockExpenses.length + 1}`,
+        id: newId,
         ...normalizedData,
         createdAt: new Date().toISOString()
       };

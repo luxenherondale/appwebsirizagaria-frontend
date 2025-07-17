@@ -115,9 +115,8 @@ La aplicación está desplegada en:
 
 Para desplegar una nueva versión:
 
-1. Asegúrate de que no haya `console.log` en el código de producción
-2. Verifica que `USE_MOCK_API = false` para usar la API real
-3. Ejecuta `npm run build`
-4. Sube los archivos de la carpeta `dist` a tu servidor web
+1. Verifica que `USE_MOCK_API = false` para usar la API real
+2. Ejecuta `npm run build`
+3. Sube los archivos de la carpeta `dist` a tu servidor web
 
 ```

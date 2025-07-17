@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// URL base de la API (cambiar en producción)
-const API_URL = 'https://api.sirizagaria.com';
+// URL base de la API
+const API_URL = 'https://api.appsirizagaria.mooo.com/api';
 
 // Cliente axios con configuración base
 const apiClient = axios.create({

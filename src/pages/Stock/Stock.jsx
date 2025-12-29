@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import "./Stock.css";
 import MainApi from "../../utils/MainApi";
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://api.sirizagaria.com';
+
 // Instanciar la API
 const api = new MainApi();
 
@@ -464,7 +466,7 @@ export const Stock = () => {
                     
                     try {
                       const token = localStorage.getItem('token');
-                      const response = await fetch('https://api.appsirizagaria.mooo.com/api/books/upload-cover', {
+                      const response = await fetch(`${API_URL}/books/upload-cover`, {
                         method: 'POST',
                         headers: {
                           'x-auth-token': token
@@ -475,7 +477,7 @@ export const Stock = () => {
                       if (data.success) {
                         setFormData(prev => ({
                           ...prev,
-                          portada: 'https://api.appsirizagaria.mooo.com' + data.imageUrl
+                          portada: API_URL.replace('/api', '') + data.imageUrl
                         }));
                         alert('Imagen subida correctamente');
                       } else {
@@ -561,7 +563,7 @@ export const Stock = () => {
                         }
                         try {
                           const token = localStorage.getItem('token');
-                          const response = await fetch(`https://api.appsirizagaria.mooo.com/api/books/isbn/${formData.isbn}`, {
+                          const response = await fetch(`${API_URL}/books/isbn/${formData.isbn}`, {
                             headers: { 'x-auth-token': token }
                           });
                           const data = await response.json();

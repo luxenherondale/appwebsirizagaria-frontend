@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // URL base de la API
-const API_URL = 'https://api.appsirizagaria.mooo.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://api.sirizagaria.com';
 
 // Cliente axios con configuración base
 const apiClient = axios.create({

@@ -6,7 +6,8 @@
 // URL base de la API
 // En desarrollo local, apunta al servidor Express en el puerto 5000
 // En producción, se usa la URL del servidor desplegado
-export const API_URL = 'https://api.appsirizagaria.mooo.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://api.sirizagaria.com';
+export { API_URL };
 
 // Configuración para las peticiones fetch
 export const fetchConfig = {

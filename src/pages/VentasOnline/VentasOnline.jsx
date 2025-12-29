@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./VentasOnline.css";
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://api.sirizagaria.com';
 
 export const VentasOnline = () => {
   const [orders, setOrders] = useState([]);

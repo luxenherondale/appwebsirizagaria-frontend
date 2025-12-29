@@ -7,6 +7,7 @@ import Register from "../../pages/Register/Register";
 import { Stock } from "../../pages/Stock/Stock";
 import { Contabilidad } from "../../pages/Contabilidad/Contabilidad";
 import { Inicio } from "../../pages/Inicio/Inicio";
+import { VentasOnline } from "../../pages/VentasOnline/VentasOnline";
 import { MainLayout } from "../Main/Main";
 import { useAuth } from "../../contexts/AuthContext";
 import NotFound from "../../pages/NotFound/NotFound";
@@ -60,6 +61,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Contabilidad />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ventas-online"
+              element={
+                <ProtectedRoute>
+                  <VentasOnline />
                 </ProtectedRoute>
               }
             />

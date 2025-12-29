@@ -446,9 +446,49 @@ export const Stock = () => {
                 />
               )}
               
-              {/* URL de la portada */}
+              {/* Subir portada */}
               <div className="form-group">
-                <label className="form-label" htmlFor="portada">URL de la Portada</label>
+                <label className="form-label" htmlFor="portadaFile">Subir Portada</label>
+                <input
+                  className="form-input"
+                  type="file"
+                  id="portadaFile"
+                  name="portadaFile"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const formDataUpload = new FormData();
+                    formDataUpload.append('cover', file);
+                    
+                    try {
+                      const token = localStorage.getItem('token');
+                      const response = await fetch('https://api.appsirizagaria.mooo.com/api/books/upload-cover', {
+                        method: 'POST',
+                        headers: {
+                          'x-auth-token': token
+                        },
+                        body: formDataUpload
+                      });
+                      const data = await response.json();
+                      if (data.success) {
+                        setFormData(prev => ({
+                          ...prev,
+                          portada: 'https://api.appsirizagaria.mooo.com' + data.imageUrl
+                        }));
+                        alert('Imagen subida correctamente');
+                      } else {
+                        alert('Error al subir imagen: ' + (data.error || 'Error desconocido'));
+                      }
+                    } catch (err) {
+                      alert('Error al subir imagen');
+                    }
+                  }}
+                />
+                <small style={{color: 'rgba(250,247,242,0.5)', marginTop: '0.5rem', display: 'block'}}>
+                  O ingresa una URL manualmente:
+                </small>
                 <input
                   className="form-input"
                   type="text"
@@ -457,6 +497,7 @@ export const Stock = () => {
                   value={formData.portada}
                   onChange={handleInputChange}
                   placeholder="https://ejemplo.com/imagen.jpg"
+                  style={{marginTop: '0.5rem'}}
                 />
               </div>
               
@@ -491,14 +532,59 @@ export const Stock = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label" htmlFor="isbn">ISBN</label>
-                  <input
-                    className="form-input"
-                    type="text"
-                    id="isbn"
-                    name="isbn"
-                    value={formData.isbn}
-                    onChange={handleInputChange}
-                  />
+                  <div style={{display: 'flex', gap: '0.5rem'}}>
+                    <input
+                      className="form-input"
+                      type="text"
+                      id="isbn"
+                      name="isbn"
+                      value={formData.isbn}
+                      onChange={handleInputChange}
+                      style={{flex: 1}}
+                    />
+                    <button
+                      type="button"
+                      className="isbn-lookup-btn"
+                      style={{
+                        padding: '0.5rem 1rem',
+                        background: 'rgba(212,168,71,0.2)',
+                        border: '1px solid #d4a847',
+                        borderRadius: '4px',
+                        color: '#d4a847',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                      }}
+                      onClick={async () => {
+                        if (!formData.isbn) {
+                          alert('Ingresa un ISBN primero');
+                          return;
+                        }
+                        try {
+                          const token = localStorage.getItem('token');
+                          const response = await fetch(`https://api.appsirizagaria.mooo.com/api/books/isbn/${formData.isbn}`, {
+                            headers: { 'x-auth-token': token }
+                          });
+                          const data = await response.json();
+                          if (data.success && data.data) {
+                            setFormData(prev => ({
+                              ...prev,
+                              title: data.data.title || prev.title,
+                              author: data.data.author || prev.author,
+                              portada: data.data.cover || prev.portada,
+                              sinopsis: prev.sinopsis
+                            }));
+                            alert('Datos cargados desde ISBN');
+                          } else {
+                            alert('No se encontró información para este ISBN');
+                          }
+                        } catch (err) {
+                          alert('Error al buscar ISBN');
+                        }
+                      }}
+                    >
+                      🔍 Buscar
+                    </button>
+                  </div>
                 </div>
                 <div className="form-group">
                   <label className="form-label" htmlFor="ubicacionActual">Ubicación Actual</label>

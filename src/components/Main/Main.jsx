@@ -11,6 +11,7 @@ const getPageTitle = (pathname) => {
     '/inicio': 'Dashboard',
     '/stock': 'Gestión de Stock',
     '/contabilidad': 'Contabilidad',
+    '/ventas-online': 'Ventas Online',
     '/proyectos': 'Proyectos en Proceso',
     '/cotizaciones': 'Cotizaciones',
     '/marketing': 'Marketing',
@@ -25,6 +26,7 @@ const getNavItems = (role) => {
   const items = [
     { to: "/inicio", icon: "📊", text: "Dashboard" },
     { to: "/stock", icon: "📚", text: "Stock Editorial" },
+    { to: "/ventas-online", icon: "🛒", text: "Ventas Online" },
     { to: "/contabilidad", icon: "💰", text: "Contabilidad" },
     { to: "/proyectos", icon: "📝", text: "Proyectos" },
     { to: "/cotizaciones", icon: "📋", text: "Cotizaciones" },

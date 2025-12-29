@@ -6,5 +6,5 @@ services:
       args:
         VITE_API_URL: https://api.sirizagaria.com
     ports:
-      - "3001:80"
+      - "80:80"
     restart: unless-stopped
